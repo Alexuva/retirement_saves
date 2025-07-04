@@ -1,0 +1,365 @@
+<div class="mx-auto">
+
+  <form class="mb-5" [formGroup]="loamForm" (ngSubmit)="onSubmit()">
+
+    <!-- Personal situation -->
+    <div class="w-full border-1 border-base mb-5">
+      <span class="block p-4 text-xl text-white bg-base">Situación personal</span>
+      
+      <div class="p-4">
+        <!-- Monthly income -->
+        <div class="mb-3">
+          <label for="monthlyIncome">
+            <span class="text-lg">Ingresos mensuales netos</span><button type="button" #tooltip data-tooltip-type="monthlyIncome" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+          </label>
+          <div class="flex flex-row align-middle mt-1">
+            <input formControlName="monthlyIncome" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('monthlyIncome') ? 'border-red-700' : ''}`" type="text" name="monthlyIncome" id="monthlyIncome" placeholder="Ej: 1580"/>
+            <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('monthlyIncome') ? 'border-red-700' : ''}`">€</span>
+          </div>
+          @if(isValidField('monthlyIncome')){
+            <small class="text-red-700">{{getFieldError('monthlyIncome')}}</small>
+          }
+        </div>
+
+        <!-- Other expenses -->
+        <div>
+          <label for="otherExpenses">
+            <span class="text-lg">Otras deudas</span><button type="button" #tooltip data-tooltip-type="otherExpenses" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+          </label>
+          <div class="flex flex-row align-middle mt-1">
+            <input formControlName="otherExpenses" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('otherExpenses') ? 'border-red-700' : ''}`" type="text" name="otherExpenses" id="otherExpenses" placeholder="Ej: 133"/>
+            <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('otherExpenses') ? 'border-red-700' : ''}`">€</span>
+          </div>
+          @if(isValidField('otherExpenses')){
+            <small class="text-red-700">{{getFieldError('otherExpenses')}}</small>
+          }
+        </div>
+      </div>
+    </div>
+    <!-- End of personal situation -->
+
+    <!-- Loam conditions -->
+    <div class="w-full border-1 border-base mb-5">
+      <span class="block p-4 text-xl text-white bg-base">Condiciones de la hipoteca</span>
+
+      <div class="p-4">
+        <!-- Loam interest, Loam time && Loam state-->
+        <div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
+          <div class="flex-auto">
+            <label for="loamInterest">
+              <span class="text-lg">Interés de la hipoteca</span><button type="button" #tooltip data-tooltip-type="loamInterest" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+            </label>
+            <div class="flex flex-row align-middle mt-1">
+              <input formControlName="loamInterest" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('loamInterest') ? 'border-red-700' : ''}`" type="text" name="loamInterest" id="loamInterest" placeholder="Ej: 2,5"/>
+              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('loamInterest') ? 'border-red-700' : ''}`">%</span>
+            </div>
+            @if(isValidField('loamInterest')){
+              <small class="text-red-700">{{getFieldError('loamInterest')}}</small>
+            }
+          </div>
+          <div class="flex-auto">
+            <label for="loamYears">
+              <span class="text-lg">Años de la hipoteca</span><button type="button" #tooltip data-tooltip-type="loamYears" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+            </label>
+            <div class="flex flex-row align-middle mt-1">
+              <input formControlName="loamYears" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('loamYears') ? 'border-red-700' : ''}`" type="text" name="loamYears" id="loamYears" placeholder="Ej: 30"/>
+              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('loamYears') ? 'border-red-700' : ''}`">años</span>
+            </div>
+            @if(isValidField('loamYears')){
+              <small class="text-red-700">{{getFieldError('loamYears')}}</small>
+            }
+          </div>
+          <div class="flex-auto">
+            <label for="loamState">
+              <span class="text-lg">Tipo de vivienda</span>
+            </label>
+            <div class="relative flex flex-row mt-1">
+              <select formControlName="loamState" class="focus:outline-base appearance-none cursor-pointer p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto" name="loamState" id="loamState">
+                <option disabled>Selecciona una opción</option>
+                <option [value]="houseStateEnum.NEW">Nueva</option>
+                <option [value]="houseStateEnum.USED">Segunda mano</option>
+              </select>
+              <div class="absolute pointer-events-none right-1 top-1/3">
+                <svg class="fill-current text-gray-400" viewBox="0 0 24 24" width="16" height="16">
+                  <path xmlns="http://www.w3.org/2000/svg" d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loam Ubication -->
+        <div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
+          <div class="flex-auto">
+            <label for="loamUbication">
+              <span class="text-lg">Ubicación de la vivienda</span><button type="button" #tooltip data-tooltip-type="loamUbication" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+            </label>
+            <div class="relative flex flex-row mt-1">
+              <select formControlName="loamUbication" class="focus:outline-base appearance-none cursor-pointer p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto" name="loamUbication" id="loamUbication">
+                <option disabled>Selecciona una comunidad</option>
+                <option value="andalucia" selected>Andalucía</option>
+                <option value="aragon">Aragón</option>
+                <option value="asturias">Asturias</option>
+                <option value="islas-baleares">Islas Baleares</option>
+                <option value="canarias">Canarias</option>
+                <option value="cantabria">Cantabria</option>
+                <option value="castilla-la-mancha">Castilla-La Mancha</option>
+                <option value="castilla-y-leon">Castilla y León</option>
+                <option value="cataluna">Cataluña</option>
+                <option value="extremadura">Extremadura</option>
+                <option value="galicia">Galicia</option>
+                <option value="madrid">Comunidad de Madrid</option>
+                <option value="murcia">Región de Murcia</option>
+                <option value="navarra">Navarra</option>
+                <option value="pais-vasco">País Vasco</option>
+                <option value="la-rioja">La Rioja</option>
+                <option value="valencia">Comunidad Valenciana</option>
+                <option value="ceuta">Ceuta</option>
+                <option value="melilla">Melilla</option>
+              </select>
+              <div class="absolute pointer-events-none right-1 top-1/3">
+                <svg class="fill-current text-gray-400" viewBox="0 0 24 24" width="16" height="16">
+                  <path xmlns="http://www.w3.org/2000/svg" d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End of loam conditions -->
+
+    <!-- Calculate Button -->
+    <button type="submit" class="p-5 w-full border bg-gradient-to-b from-accent to-base text-white font-medium text-xl cursor-pointer">
+      @if(isCalculating() === true){ 
+        Calculando...
+      }@else{
+        Calcular resultados
+      }
+    </button>
+
+  </form>
+  <!-- End form -->
+
+  <!-- Resume -->
+  <div [classList]="`flex ${results().isDebtGreaterThanIncome() >= 35 ? 'flex-col-reverse xl:flex-row' : 'flex-col lg:flex-row'} justify-around items-center p-5 md:p-10 bg-[rgba(0,107,253,0.05)] gap-5 mb-5`" #resume>
+    <div [classList]="`flex flex-col gap-2 ${results().isDebtGreaterThanIncome() >= 35 ? 'xl:w-1/2' : 'lg:w-1/2'}`">
+      @if(results().isDebtGreaterThanIncome() >= 35 && results().isDebtGreaterThanIncome() <= 40){
+        <p class="text-lg">
+          Como norma general, la mayoría de entidades financieras deniegan las hipotecas cuando el dinero total que destinas a deudas (incluida la hipoteca), <span class="font-medium underline">supera el 35% de tus ingresos</span>, como es el caso.
+        </p>
+        <p class="text-lg">
+          Sin embargo, algunas entidades son más flexibles con perfiles concretos, como los funcionarios.
+        </p>
+        <p class="text-lg">
+          Un bróker hipotecario como <a class="underline text-base hover:text-accent font-medium" href="https://javilinares.com/broker-hipotecario/?utm_source=blog&utm_medium=seo&utm_campaign=articulo-blog#form">Aqueos</a> puede ayudarte a superar ese límite y hacer valer tu situación ante los bancos. Además, también te ayudaremos a encontrar la mejor hipoteca del mercado para tu perfil. 
+        </p>
+      }@else if(results().isDebtGreaterThanIncome() > 40){
+        <p class="text-lg">
+          Actualmente tus deudas superan tus ingresos mensuales y en esas condiciones es imposible conseguir una hipoteca.
+        </p>
+        <p class="text-lg">
+          Las entidades bancarias van a pedirte que las deudas <span class="font-medium underline">no excedan el 35%</span> de tus ingresos totales para financiarte.
+        </p>
+      }@else {
+        <span class="text-lg text-center">Cuota máxima de hipoteca:</span>
+        <span class="text-5xl md:text-7xl text-center font-medium" [countUp]="results().maxPayments" [options]="{ decimalPlaces: 2, separator: '.', decimal: ',', suffix: ' €', duration: 0.6}">{{ results().maxPayments|currency:'EUR':'symbol':'1.2-2' }}</span>
+      }      
+    </div>
+    <div class="flex flex-col text-lg text-center gap-2 justify-center items-center md:w-1/2">
+      @if(results().isDebtGreaterThanIncome() >= 35){
+        <span>Tus deudas superan tus ingresos en un:</span>
+        <span class="text-5xl md:text-7xl font-medium" [countUp]="results().isDebtGreaterThanIncome()" [options]="{ decimalPlaces: 2, separator: '.', decimal: ',', suffix: '%', duration: 0.6}">{{ results().isDebtGreaterThanIncome().toString().replaceAll('.', ',') }}%</span>
+      }@else{
+        <span>Valor máximo de la vivienda:</span>
+        <span class="text-2xl md:text-4xl font-light">{{ results().maxHouseValue|currency:'EUR':'symbol':'1.2-2' }}</span>
+        <!-- <button class="border border-base rounded-xs p-2 mt-2 lg:mt-0 text-base hover:bg-base hover:text-white cursor-pointer" (click)="showTable(true)">
+          Ver cuadro de amortización
+        </button> -->
+        <button id="downloadPdf" class="border border-base rounded-xs p-2 mt-2 lg:mt-0 text-base hover:bg-base hover:text-white cursor-pointer font-medium" (click)="generatePdf()">
+          @if(isGeneratingPdf() === true){ 
+            Creando pdf para descarga...
+          }@else{
+            Descargar cuadro amortización
+          }
+        </button>
+      }
+    </div>
+  </div>
+  <!-- End resume -->
+  
+  <!-- Results -->
+  <div class="flex flex-col lg:flex-row mb-5 columns-2 gap-5" #list>
+
+    <!-- No debt -->
+    @if(!(results().isDebtGreaterThanIncome() >= 35)){
+      <div id="list-items" class="flex flex-col text-lg gap-1 p-5 w-full lg:w-2/4">
+        <div class="flex flex-row justify-between">
+          <span>Hipoteca máxima:</span>
+          <span>{{ results().maxLoam|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Interés:</span>
+          <span>{{ results().loamInterest }} %</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Intereses totales:</span>
+          <span>{{ results().totalInterestPayed|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Duración:</span>
+          <span>{{ results().loamYears }} año(s)</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Ahorro necesario:</span>
+          <span>{{ results().mustHaveSaves|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+    
+        <hr class="my-4 text-[#d1d5dc] border-1">
+    
+        <div class="flex flex-row justify-between">
+          <span>Gastos de compra e impuestos:</span>
+          <span>{{ results().additionalCost.total|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Notaría:</span>
+          <span>{{ results().additionalCost.notary|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Registro:</span>
+          <span>{{ results().additionalCost.registry|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Gestoría:</span>
+          <span>{{ results().additionalCost.administration|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Tasación:</span>
+          <span>{{ results().additionalCost.taxation|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="flex flex-row justify-between">
+          <span>Impuestos:</span>
+          <span>{{ results().additionalCost.tax|currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+    }
+
+    @if(!(results().isDebtGreaterThanIncome() >= 35)){
+      <!-- Result Text No Debt -->
+      <div id="loam-text" class="text-lg w-full lg:w-2/4 p-5 bg-[rgba(0,219,183,0.05)]">
+        <p>
+          Ahora que ya tienes la cifra de la hipoteca que te puedes permitir, solo te queda conseguirla al mejor precio. 
+        </p>
+        <br>
+        <p>
+          Una diferencia de 1 punto porcentual en tu hipoteca se puede traducir en miles de euros de ahorro y en una casa mejor con tus mismos ingresos. 
+          En el <a class="underline text-base hover:text-accent font-medium" href="https://javilinares.com/broker-hipotecario/?utm_source=blog&utm_medium=seo&utm_campaign=articulo-blog#form">bróker hipotecario Aqueos</a> te podemos ayudar a conseguirla.
+        </p>
+        <br>
+        <p>
+          Somos especialistas en hipotecas, analizaremos tu caso y daremos con la mejor hipoteca para ti que haya en el mercado. 
+          Solo tienes que <a class="underline text-base hover:text-accent font-medium" href="https://javilinares.com/broker-hipotecario/?utm_source=blog&utm_medium=seo&utm_campaign=articulo-blog#form">rellenar este cuestionario</a> y nos pondremos en contacto. 
+        </p>
+      </div>
+      <!-- End Result Text No Debt -->
+    }
+    <!-- End No debt -->
+
+    <!-- Debt -->
+    @if(results().isDebtGreaterThanIncome() >= 35 && results().isDebtGreaterThanIncome() <= 40){
+      <div class="text-lg w-full p-5">
+        <p class="font-medium text-xl mb-2.5">¿Qué más puedes hacer?</p>
+        <p class="mb-2.5">
+          Mejorar tu perfil como hipotecado reduciendo el porcentaje de deuda o aumentando tus ingresos. 
+        </p>
+        <p class="mb-2.5">
+          En la <a class="underline text-base hover:text-accent font-medium" href="https://javilinares.com/formula-linvest/?utm_source=blog&utm_medium=seo&utm_campaign=articulo-blog">formación de finanzas e inversiones Método Linvest</a> te enseño a:
+        </p>
+        <ul class="list-checks">
+          <li class="list-item my-1">✅ Tomar el control de tus finanzas personales.</li>
+          <li class="list-item my-1">✅ Ahorrar todos los meses de forma automática.</li>
+          <li class="list-item my-1">✅ Crear tu propia cartera de inversión a largo plazo.</li>
+        </ul>
+      </div>
+      <!-- End Debt -->
+    }@else if(results().isDebtGreaterThanIncome() > 40){
+      <!-- Max Debt -->
+      <div class="text-lg w-full p-5">
+        <p class="font-medium text-xl mb-2.5">¿Qué puedes hacer para conseguirlo?</p>
+        <p class="mb-2.5">
+          Crea un plan para reducir tus deudas. Estos son los pasos a seguir: 
+        </p>
+        <ul class="list-decimal list-inside">
+          <li class="list-item my-1">Haz un listado con todas tus deudas que incluya el capital pendiente de pago y el tipo de interés.</li>
+          <li class="list-item my-1">Ordénalas según la cuantía pendiente y el tipo de interés. Identifica la más pequeña y la que más intereses te cobre.</li>
+          <li class="list-item my-1">Si los intereses de la más cara superan el 10%, prioriza el pago de esa deuda frente al resto. En caso contrario, empieza por la más pequeña.</li>
+          <li class="list-item my-1">Cuando hayas terminado de pagarla, utiliza el dinero que has liberado para ir a por la siguiente deuda del listado.</li>
+        </ul><br>
+        <p>
+          Si no tienes capacidad de ahorro para pagar las deudas, puedes negociar un periodo de carencia con el banco o investigar herramientas como una reunificación de deudas.
+        </p>
+      </div>
+      <!-- End Max Debt -->
+    }
+    
+  </div>
+  <!-- End Results -->
+
+  <div class="overflow-x-auto rounded-xs bg-[rgba(0,219,183,0.05)] hidden" #table>
+    <table class="w-full text-sm text-left rtl:text-right tabular-nums">
+      <caption class="p-5 text-lg font-semibold text-left rtl:text-right">
+        Cuadro de amortización
+        <p class="mt-1 text-sm font-normal text-[#4a5565]">
+          Este cuadro representa la amortización de la hipoteca.
+        </p>
+      </caption>
+      <thead class="text-xs uppercase bg-[rgba(0,219,183,0.25)]">
+        <tr>
+          <th scope="col" class="px-3 md:px-6 py-3">
+            Mes
+          </th>
+          <th scope="col" class="px-3 md:px-6 py-3">
+            Inicial
+          </th>
+          <th scope="col" class="px-3 md:px-6 py-3">
+            Cuota
+          </th>
+          <th scope="col" class="px-3 md:px-6 py-3">
+            Intereses
+          </th>
+          <th scope="col" class="px-3 md:px-6 py-3">
+            Capital
+          </th>
+          <th scope="col" class="px-3 md:px-6 py-3">
+            Saldo Final
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(period of results().amortization; track period.i){
+          <tr class="border-b border-[rgba(0,219,183,0.25)]">
+            <th scope="row" class="px-3 md:px-6 py-4 whitespace-nowrap">
+              {{ period.i }}
+            </th>
+            <td class="px-3 md:px-6 py-4">
+              {{ period.initial|currency:'EUR':'symbol':'1.2-2'}}
+            </td>
+            <td class="px-3 md:px-6 py-4">
+              {{ period.maxPayments|currency:'EUR':'symbol':'1.2-2'}}
+            </td>
+            <td class="px-3 md:px-6 py-4">
+              {{ period.tax|currency:'EUR':'symbol':'1.2-2'}} 
+            </td>
+            <td class="px-3 md:px-6 py-4">
+              {{ period.payed|currency:'EUR':'symbol':'1.2-2'}}
+            </td>
+            <td class="px-3 md:px-6 py-4">
+              {{ period.final|currency:'EUR':'symbol':'1.2-2'}}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+</div>
