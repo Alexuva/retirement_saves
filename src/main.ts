@@ -1,6 +1,9 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { App } from './app/app';
+import { createApplication } from "@angular/platform-browser";
+import { appConfig } from "./app/app.config";
+import {createCustomElement} from '@angular/elements';
+import { App } from "./app/app";
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+createApplication(appConfig)
+  .then(appRef => {
+    customElements.define('retirement-calculator', createCustomElement(App, {injector: appRef.injector}))
+  })
