@@ -229,25 +229,25 @@
       @let result = results();
       @if(result.isSavesNeeded){
         <p>
-          Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes</b>
-          y necesitarás <b>{{result.neededNewMonthlySaves + result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>{{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}}</b>.
+          Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>
+          y necesitarás <b>{{result.neededNewMonthlySaves + result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
           <br>
           Esto se traduce en que necesitas ahorrar <b>{{result.savesNeeded|currency:'EUR':'symbol':'1.2-2'}} en total</b>. Para conseguirlo, tendrás que ahorrar <b>{{result.neededNewMonthlySaves + result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes hasta jubilarte</b>.
           <br>
           Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b>,
           lo que supondría un <b>{{result.percentageCovered}}%</b>, 
           @if(result.percentageCovered > 100){
-            estas ahorrando un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>{{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} al mes de jubilación</b>.
+            estas ahorrando un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
           }@else {
-            necesitas ahorrar un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>{{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} al mes de jubilación</b>.
+            necesitas ahorrar un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
           }
         </p>
       }@else {
         <p>
-          Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes</b>, con esta jubilación puedes alcanzar tu objetivo de <b>{{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}}</b>.
+          Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>, con esta jubilación puedes alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
           <br>
           Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b>,
-          lo que supondría que estas ahorrando un extra de <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>{{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} al mes de jubilación</b>.
+          lo que supondría que estas ahorrando un extra de <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
         </p>
       }
     </div>

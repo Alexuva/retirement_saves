@@ -39,7 +39,7 @@ export class RetirementSaves {
   })
 
   retirementResult = computed(()=>{
-    debugger;
+    
     //1. Get data
     const data = this.retirementData();
     //2. Calculate each salary until retirement
@@ -52,6 +52,8 @@ export class RetirementSaves {
     const percentage = this.retirementPercentage(data.retirementAge, data.yearsContributing, data.currentAge);
     //6. Calculate the monthly payment
     const monthlyRetirement = this.monthlyRetirementPayment(data.retirementAge, percentage, regulatoryBase, data.currentAge, data.yearsContributing, data.annualInflation);
+    const monthlyRetirementInflation = data.annualInflation > 0 ? this.calculateInflation(monthlyRetirement, (data.retirementAge - data.currentAge), data.annualInflation) : monthlyRetirement;
+    const objectiveInflation = data.annualInflation > 0 ? this.calculateInflation(data.retirementMonthlyObjective, (data.retirementAge - data.currentAge), data.annualInflation) : data.retirementMonthlyObjective;
     //7. Calculates if the person needs to have saves to get to the objective
     const isSavesNeeded = this.isSavesNeeded(monthlyRetirement, data.retirementMonthlyObjective, data.annualInflation, data.currentAge, data.retirementAge);
     //8. Calculates the future saves with the current saves monthly
@@ -62,6 +64,8 @@ export class RetirementSaves {
       return {
         data,
         monthlyRetirement,
+        monthlyRetirementInflation,
+        objectiveInflation,
         isSavesNeeded,
         savesNeeded: null,
         capitalNeeded: null,
@@ -86,6 +90,8 @@ export class RetirementSaves {
     return {
       data,
       monthlyRetirement,
+      monthlyRetirementInflation,
+      objectiveInflation,
       isSavesNeeded,
       savesNeeded,
       capitalNeeded,
@@ -267,10 +273,10 @@ export class RetirementSaves {
    * @returns number that represents the regulatory base
    */
   regulatoryBase(contributionBases:number[]):number{
-    const contributingYears:number = contributionBases.length < 25 ? contributionBases.length : 25;
-    const lastYears:number[] = contributionBases.slice(-contributingYears);
-    const sum:number = lastYears.reduce((acc, val) => acc + val, 0);
-    return parseFloat((sum / contributingYears).toFixed(2));
+    const contributionMonthlyBases:number[] = contributionBases.flatMap( monthlyBase => Array(12).fill(monthlyBase)) //Creates an array with all the monthlybases
+    const lastMonths:number[] = contributionMonthlyBases.slice(-300);
+    const sum:number = lastMonths.reduce((acc, val) => acc + val, 0);
+    return parseFloat((sum / 350).toFixed(2));
   }
 
   /**
@@ -419,7 +425,7 @@ export class RetirementSaves {
    */
   capitalNeeded(savesNeeded:number):number {
 
-    const capital = savesNeeded * ((1 - Math.pow((1 + (3 / 100)), -50)) / (3 / 100));
+    const capital = savesNeeded * ((1 - Math.pow((1 + (3 / 100)), -25)) / (3 / 100));
 
     return parseFloat(capital.toFixed(2))
   }
@@ -502,5 +508,16 @@ export class RetirementSaves {
     const newSaves = parseFloat((neededSavesMonthly - currentSavesMonthly).toFixed(2));
 
     return newSaves;
+  }
+
+  /**
+   * Calculates the inflation 
+   * @param initialAmmount `number`
+   * @param years `number`
+   * @param inflation `number`
+   * @returns `number`
+   */
+  calculateInflation(initialAmmount:number, years:number, inflation:number):number {
+    return initialAmmount * Math.pow(1 + (inflation / 100), years);
   }
 }

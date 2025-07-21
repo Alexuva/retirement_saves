@@ -57,9 +57,9 @@ export class App {
     currentSavesMonthly: ['', [decimalMinValidation(0), decimalsValidation]],
     currentReturn: ['', [decimalsValidation, percentageValidation]]
   },
-  {
-    validators: this.retirementMonthlyIsGreater('retirementMonthlyObjective', 'yearlyIncome')
-  }
+  // {
+  //   validators: this.retirementMonthlyIsGreater('retirementMonthlyObjective', 'yearlyIncome')
+  // }
   )
 
   regimeTypeEnum = RegimeType;
