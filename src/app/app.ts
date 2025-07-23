@@ -1,4 +1,4 @@
-import { afterNextRender, Component, computed, ElementRef, inject, signal, Signal, viewChild, viewChildren, ViewEncapsulation, WritableSignal } from '@angular/core';
+import { afterNextRender, Component, computed, effect, ElementRef, inject, signal, Signal, viewChild, viewChildren, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 
@@ -38,6 +38,8 @@ export class App {
   private fb = inject(FormBuilder);
   private currencyPipe = inject(CurrencyPipe);
   private retirementSavesService = inject(RetirementSaves);
+
+  currentStep: WritableSignal<number> = signal(1);
   
   tooltips: Signal<readonly ElementRef<HTMLButtonElement>[]> = viewChildren<ElementRef<HTMLButtonElement>>('tooltip');
   resume: Signal<ElementRef<HTMLElement> | undefined> = viewChild<ElementRef<HTMLElement>>('resume');
@@ -63,15 +65,62 @@ export class App {
   )
 
   regimeTypeEnum = RegimeType;
-  results = computed(()=> this.retirementSavesService.retirementResult());
+  results: WritableSignal<any> = signal(null);
+  //results = computed(()=> this.retirementSavesService.retirementResult());
   isGeneratingPdf:WritableSignal<boolean> = signal(false);
   isCalculating:WritableSignal<boolean> = signal(false);
   isShowTable:WritableSignal<boolean> = signal(false);
 
   constructor(){
+
+    effect(()=>{
+      const tooltips = this.tooltips();
+      this.createTooltips(tooltips);
+    })
+
     afterNextRender(() => {
       this.createTooltips(this.tooltips());
     });
+  }
+
+  nextStep():void {
+    if(this.currentStep() >= 3) return;
+    this.currentStep.update(step => step + 1);
+  }
+
+  previousStep():void {
+    if(this.currentStep() <= 1) return;
+    this.currentStep.update(step => step - 1);
+  }
+
+  verifyStep(step:number): boolean {
+    
+    switch(step){
+      case 1:
+        const currentAge = this.retirementForm.get('currentAge');
+        const yearlyIncome = this.retirementForm.get('yearlyIncome');
+        const yearsContributing = this.retirementForm.get('yearsContributing');
+        const annualSalaryIncrease = this.retirementForm.get('annualSalaryIncrease');
+        const annualInflation = this.retirementForm.get('annualInflation');
+        
+      return !!(currentAge?.valid && yearlyIncome?.valid && yearsContributing?.valid && annualSalaryIncrease?.valid && annualInflation?.valid);
+      
+      case 2: 
+        const retirementAge = this.retirementForm.get('retirementAge');
+        const retirementMonthlyObjective = this.retirementForm.get('retirementMonthlyObjective');
+
+        return !!(retirementAge?.valid && retirementMonthlyObjective?.valid);
+
+      case 3:
+        const currentSaves = this.retirementForm.get('currentSaves');
+        const currentSavesMonthly = this.retirementForm.get('currentSavesMonthly');
+        const currentReturn = this.retirementForm.get('currentReturn');
+
+        return !!(currentSaves?.valid && currentSavesMonthly?.valid && currentReturn?.valid);
+
+      default:
+        return false;
+    }
   }
 
   abs(number:number):number {
@@ -190,10 +239,10 @@ export class App {
     this.isCalculating.set(true);
     const normalized_values= this.normalizeValues(this.retirementForm);
     this.retirementSavesService.retirementData.set(normalized_values);
+    this.results.set(this.retirementSavesService.retirementResult());
     this.isCalculating.set(false);
     const resume = this.resume();
     if(resume) resume.nativeElement.scrollIntoView({behavior: 'smooth'});
-    console.log(this.retirementSavesService.retirementResult())
   }
 
   isValidField( fieldName: string ): boolean | null {

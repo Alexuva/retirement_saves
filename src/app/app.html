@@ -1,343 +1,377 @@
 <div class="mx-auto">
-  
-  <form class="mb-5" [formGroup]="retirementForm" (ngSubmit)="onSubmit()">
 
-    <!-- Actual situation -->
-    <div class="w-full border-1 border-base mb-5">
-      <span class="block p-4 text-xl text-white bg-base">Situación actual</span>
-      
-      <div class="p-4">
+	<form class="mb-5" [formGroup]="retirementForm" (ngSubmit)="onSubmit()">
+		@switch (currentStep()) {
+			@case (1){
+				<!-- Actual situation -->
+				<div class="w-full border-1 border-base mb-5">
+					<span class="block p-4 text-xl text-white bg-base">Situación actual</span>
+					<div class="p-4">
+						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
 
-        <div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
-          <!-- Age -->
-          <div class="flex-1/2">
-            <label for="currentAge">
-              <span class="text-lg">Edad</span>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="currentAge" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('currentAge') ? 'border-red-700' : ''}`" type="text" name="currentAge" id="currentAge" placeholder="Ej: 29"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('currentAge') ? 'border-red-700' : ''}`">años</span>
-            </div>
-            @if(isValidField('currentAge')){
-              <small class="text-red-700">{{getFieldError('currentAge')}}</small>
-            }
-          </div>
+							<!-- Age -->
+							<div class="flex-1/2">
+								<label for="currentAge">
+									<span class="text-lg">Edad</span>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="currentAge" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('currentAge') ? 'border-red-700' : ''}`" type="text" name="currentAge" id="currentAge" placeholder="Ej: 29"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('currentAge') ? 'border-red-700' : ''}`">años</span>
+								</div>
+								@if(isValidField('currentAge')){
+									<small class="text-red-700">{{getFieldError('currentAge')}}</small>
+								}
+							</div>
+		
+							<!-- Annual income -->
+							<div class="flex-1/2">
+								<label for="yearlyIncome">
+									<span class="text-lg">Ingresos anuales brutos</span><button type="button" #tooltip data-tooltip-type="yearlyIncome" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="yearlyIncome" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('yearlyIncome') ? 'border-red-700' : ''}`" type="text" name="yearlyIncome" id="yearlyIncome" placeholder="Ej: 29000"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('yearlyIncome') ? 'border-red-700' : ''}`">€</span>
+								</div>
+								@if(isValidField('yearlyIncome')){
+									<small class="text-red-700">{{getFieldError('yearlyIncome')}}</small>
+								}
+							</div>
+		
+						</div>
+					
+						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
+		
+							<!-- Contribution years -->
+							<div class="flex-1/2">
+								<label for="yearsContributing">
+									<span class="text-lg">Número de años cotizados</span><button type="button" #tooltip data-tooltip-type="yearsContributing" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="yearsContributing" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('yearsContributing') ? 'border-red-700' : ''}`" type="text" name="yearsContributing" id="yearsContributing" placeholder="Ej: 12"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('yearsContributing') ? 'border-red-700' : ''}`">años</span>
+								</div>
+								@if(isValidField('yearsContributing')){
+									<small class="text-red-700">{{getFieldError('yearsContributing')}}</small>
+								}
+							</div>
+		
+							<!-- Contribution Regime -->
+							<div class="flex-1/2">
+								<label for="regime">
+									<span class="text-lg">Régimen de cotización</span><button type="button" #tooltip data-tooltip-type="regime" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+								</label>
+								<div class="relative flex flex-row mt-1">
+									<select formControlName="regime" class="focus:outline-base appearance-none cursor-pointer p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto" name="regime" id="regime">
+										<option disabled>Selecciona una opción</option>
+										<option [value]="regimeTypeEnum.AJENA">Cuenta Ajena</option>
+										<option [value]="regimeTypeEnum.PROPIA">Cuenta Propia</option>
+									</select>
+									<div class="absolute pointer-events-none right-1 top-1/3">
+										<svg class="fill-current text-gray-400" viewBox="0 0 24 24" width="16" height="16">
+											<path xmlns="http://www.w3.org/2000/svg" d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z"/>
+										</svg>
+									</div>
+								</div>
+							</div>
+		
+						</div>
+		
+						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
+		
+							<!-- Annual salary increase -->
+							<div class="flex-1/2">
+								<label for="annualSalaryIncrease">
+									<span class="text-lg">Incremento anual del sueldo</span><button type="button" #tooltip data-tooltip-type="annualSalaryIncrease" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="annualSalaryIncrease" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('annualSalaryIncrease') ? 'border-red-700' : ''}`" type="text" name="annualSalaryIncrease" id="annualSalaryIncrease" placeholder="Ej: 4"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('annualSalaryIncrease') ? 'border-red-700' : ''}`">%</span>
+								</div>
+								@if(isValidField('annualSalaryIncrease')){
+									<small class="text-red-700">{{getFieldError('annualSalaryIncrease')}}</small>
+								}
+							</div>
+		
+							<!-- Annual inflation -->
+							<div class="flex-1/2">
+								<label for="annualInflation">
+									<span class="text-lg">Inflacción media anual</span><button type="button" #tooltip data-tooltip-type="annualInflation" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="annualInflation" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('annualInflation') ? 'border-red-700' : ''}`" type="text" name="annualInflation" id="annualInflation" placeholder="Ej: 3"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('annualInflation') ? 'border-red-700' : ''}`">%</span>
+								</div>
+								@if(isValidField('annualInflation')){
+									<small class="text-red-700">{{getFieldError('annualInflation')}}</small>
+								}
+							</div>
+		
+						</div>
+		
+					</div>
+				</div>
+				<!-- End of actual situation -->
+			}
 
-          <!-- Annual income -->
-          <div class="flex-1/2">
-            <label for="yearlyIncome">
-              <span class="text-lg">Ingresos anuales brutos</span><button type="button" #tooltip data-tooltip-type="yearlyIncome" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="yearlyIncome" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('yearlyIncome') ? 'border-red-700' : ''}`" type="text" name="yearlyIncome" id="yearlyIncome" placeholder="Ej: 29000"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('yearlyIncome') ? 'border-red-700' : ''}`">€</span>
-            </div>
-            @if(isValidField('yearlyIncome')){
-              <small class="text-red-700">{{getFieldError('yearlyIncome')}}</small>
-            }
-          </div>
+			@case (2){
+				<!-- Future plans -->
+				<div class="w-full border-1 border-base mb-5">
+					<span class="block p-4 text-xl text-white bg-base">Planes de futuro</span>
 
-        </div>
-      
-        <div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
+					<div class="p-4">
 
-          <!-- Contribution years -->
-          <div class="flex-1/2">
-            <label for="yearsContributing">
-              <span class="text-lg">Número de años cotizados</span><button type="button" #tooltip data-tooltip-type="yearsContributing" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="yearsContributing" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('yearsContributing') ? 'border-red-700' : ''}`" type="text" name="yearsContributing" id="yearsContributing" placeholder="Ej: 12"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('yearsContributing') ? 'border-red-700' : ''}`">años</span>
-            </div>
-            @if(isValidField('yearsContributing')){
-              <small class="text-red-700">{{getFieldError('yearsContributing')}}</small>
-            }
-          </div>
+						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
 
-          <!-- Contribution Regime -->
-          <div class="flex-1/2">
-            <label for="regime">
-              <span class="text-lg">Régimen de cotización</span><button type="button" #tooltip data-tooltip-type="regime" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-            </label>
-            <div class="relative flex flex-row mt-1">
-              <select formControlName="regime" class="focus:outline-base appearance-none cursor-pointer p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto" name="regime" id="regime">
-                <option disabled>Selecciona una opción</option>
-                <option [value]="regimeTypeEnum.AJENA">Cuenta Ajena</option>
-                <option [value]="regimeTypeEnum.PROPIA">Cuenta Propia</option>
-              </select>
-              <div class="absolute pointer-events-none right-1 top-1/3">
-                <svg class="fill-current text-gray-400" viewBox="0 0 24 24" width="16" height="16">
-                  <path xmlns="http://www.w3.org/2000/svg" d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z"/>
-                </svg>
-              </div>
-            </div>
-          </div>
+							<!-- Retirement Age -->
+							<div class="flex-1/2">
+								<label for="retirementAge">
+									<span class="text-lg">Edad de jubilación</span><button type="button" #tooltip data-tooltip-type="retirementAge" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="retirementAge" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('retirementAge') ? 'border-red-700' : ''}`" type="text" name="retirementAge" id="retirementAge" placeholder="Ej: 65"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('retirementAge') ? 'border-red-700' : ''}`">años</span>
+								</div>
+								@if(isValidField('retirementAge')){
+									<small class="text-red-700">{{getFieldError('retirementAge')}}</small>
+								}
+							</div>
 
-        </div>
+							<!-- Retirement monthly objective -->
+							<div class="flex-1/2">
+								<label for="retirementMonthlyObjective">
+									<span class="text-lg">Ingresos mensuales en la jubilación</span><button type="button" #tooltip data-tooltip-type="retirementMonthlyObjective" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="retirementMonthlyObjective" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('retirementMonthlyObjective') ? 'border-red-700' : ''}`" type="text" name="retirementMonthlyObjective" id="retirementMonthlyObjective" placeholder="Ej: 3000"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('retirementMonthlyObjective') ? 'border-red-700' : ''}`">€</span>
+								</div>
+								@if(isValidField('retirementMonthlyObjective')){
+									<small class="text-red-700">{{getFieldError('retirementMonthlyObjective')}}</small>
+								}
+							</div>
 
-        <div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
+						</div>
+						
+					</div>
+				</div>
+				<!-- End of future plans -->
+			}
 
-          <!-- Annual salary increase -->
-          <div class="flex-1/2">
-            <label for="annualSalaryIncrease">
-              <span class="text-lg">Incremento anual del sueldo</span><button type="button" #tooltip data-tooltip-type="annualSalaryIncrease" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="annualSalaryIncrease" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('annualSalaryIncrease') ? 'border-red-700' : ''}`" type="text" name="annualSalaryIncrease" id="annualSalaryIncrease" placeholder="Ej: 4"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('annualSalaryIncrease') ? 'border-red-700' : ''}`">%</span>
-            </div>
-            @if(isValidField('annualSalaryIncrease')){
-              <small class="text-red-700">{{getFieldError('annualSalaryIncrease')}}</small>
-            }
-          </div>
+			@case (3){
+				<!-- Economic situation -->
+				<div class="w-full border-1 border-base mb-5">
+					<span class="block p-4 text-xl text-white bg-base">Situación financiera</span>
 
-          <!-- Annual inflation -->
-          <div class="flex-1/2">
-            <label for="annualInflation">
-              <span class="text-lg">Inflacción media anual</span><button type="button" #tooltip data-tooltip-type="annualInflation" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="annualInflation" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('annualInflation') ? 'border-red-700' : ''}`" type="text" name="annualInflation" id="annualInflation" placeholder="Ej: 3"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('annualInflation') ? 'border-red-700' : ''}`">%</span>
-            </div>
-            @if(isValidField('annualInflation')){
-              <small class="text-red-700">{{getFieldError('annualInflation')}}</small>
-            }
-          </div>
+					<div class="p-4">
 
-        </div>
+						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
 
-      </div>
-    </div>
-    <!-- End of actual situation -->
+							<!-- Actual saves until retirement -->
+							<div class="flex-1/2">
+								<label for="currentSaves">
+									<span class="text-lg">Ahorros actuales para la jubilación</span>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="currentSaves" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('currentSaves') ? 'border-red-700' : ''}`" type="text" name="currentSaves" id="currentSaves" placeholder="Ej: 10000"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('currentSaves') ? 'border-red-700' : ''}`">€</span>
+								</div>
+								@if(isValidField('currentSaves')){
+									<small class="text-red-700">{{getFieldError('currentSaves')}}</small>
+								}
+							</div>
 
-    <!-- Future plans -->
-    <div class="w-full border-1 border-base mb-5">
-      <span class="block p-4 text-xl text-white bg-base">Planes de futuro</span>
+							<!-- Monthly saves -->
+							<div class="flex-1/2">
+								<label for="currentSavesMonthly">
+									<span class="text-lg">Aportaciones periódicas</span><button type="button" #tooltip data-tooltip-type="currentSavesMonthly" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+								</label>
+								<div class="flex flex-row align-middle mt-1">
+									<input formControlName="currentSavesMonthly" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('currentSavesMonthly') ? 'border-red-700' : ''}`" type="text" name="currentSavesMonthly" id="currentSavesMonthly" placeholder="Ej: 150"/>
+									<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('currentSavesMonthly') ? 'border-red-700' : ''}`">€</span>
+								</div>
+								@if(isValidField('currentSavesMonthly')){
+									<small class="text-red-700">{{getFieldError('currentSavesMonthly')}}</small>
+								}
+							</div>
+							
+						</div>
 
-      <div class="p-4">
+						<!-- Annual Returns -->
+						<div class="mb-3">
+							<label for="currentReturn">
+								<span class="text-lg">Rentabilidad anual esperada</span><button type="button" #tooltip data-tooltip-type="currentReturn" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
+							</label>
+							<div class="flex flex-row align-middle mt-1">
+								<input formControlName="currentReturn" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('currentReturn') ? 'border-red-700' : ''}`" type="text" name="currentReturn" id="currentReturn" placeholder="Ej: 2,5"/>
+								<span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('currentReturn') ? 'border-red-700' : ''}`">%</span>
+							</div>
+							@if(isValidField('currentReturn')){
+								<small class="text-red-700">{{getFieldError('currentReturn')}}</small>
+							}
+						</div>
 
-        <div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
+					</div>
 
-          <!-- Retirement Age -->
-          <div class="flex-1/2">
-            <label for="retirementAge">
-              <span class="text-lg">Edad de jubilación</span><button type="button" #tooltip data-tooltip-type="retirementAge" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="retirementAge" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('retirementAge') ? 'border-red-700' : ''}`" type="text" name="retirementAge" id="retirementAge" placeholder="Ej: 65"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('retirementAge') ? 'border-red-700' : ''}`">años</span>
-            </div>
-            @if(isValidField('retirementAge')){
-              <small class="text-red-700">{{getFieldError('retirementAge')}}</small>
-            }
-          </div>
+				</div>
+				<!-- End of economic situtation -->
+			}
+		}
 
-          <!-- Retirement monthly objective -->
-          <div class="flex-1/2">
-            <label for="retirementMonthlyObjective">
-              <span class="text-lg">Ingresos mensuales en la jubilación</span><button type="button" #tooltip data-tooltip-type="retirementMonthlyObjective" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="retirementMonthlyObjective" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('retirementMonthlyObjective') ? 'border-red-700' : ''}`" type="text" name="retirementMonthlyObjective" id="retirementMonthlyObjective" placeholder="Ej: 3000"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('retirementMonthlyObjective') ? 'border-red-700' : ''}`">€</span>
-            </div>
-            @if(isValidField('retirementMonthlyObjective')){
-              <small class="text-red-700">{{getFieldError('retirementMonthlyObjective')}}</small>
-            }
-          </div>
+		<div [classList]="`p-4 flex ${currentStep() === 1 ? 'justify-end' : 'justify-between' }`">
+			@switch(currentStep()){
+				@case (1){
+					<!-- Next Step -->
+					<button type="button" [disabled]="!verifyStep(1)" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-base disabled:text-white disabled:border-none px-4 py-2 font-medium border-1 text-xl rounded-xs cursor-pointer bg-base text-white hover:border-accent hover:bg-white hover:text-accent transition-all ease-in-out duration-150" (click)="nextStep()">
+						Continuar
+					</button>
+				}
+				@case (2){
+					<!-- Back Step -->
+					<button type="button" [disabled]="!verifyStep(2)" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:border-base disabled:text-base px-4 py-2 font-medium border-1 text-xl rounded-xs cursor-pointer border-base text-base hover:border-black hover:text-black transition-all ease-in-out duration-150" (click)="previousStep()">
+						Volver
+					</button>
+					<!-- Next Step -->
+					<button type="button" [disabled]="!verifyStep(2)" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-base disabled:text-white disabled:border-none px-4 py-2 font-medium border-1 text-xl rounded-xs cursor-pointer bg-base text-white hover:border-accent hover:bg-white hover:text-accent transition-all ease-in-out duration-150" (click)="nextStep()">
+						Continuar
+					</button>
+				}
+				@case (3){
+					<!-- Back Step -->
+					<button type="button" [disabled]="!verifyStep(3)" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:border-base disabled:text-base px-4 py-2 font-medium border-1 text-xl rounded-xs cursor-pointer border-base text-base hover:border-black hover:text-black transition-all ease-in-out duration-150" (click)="previousStep()">
+						Volver
+					</button>
+					<!-- Calculate Button -->
+					<button type="submit" [disabled]="!verifyStep(3)" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gradient-to-b disabled:from-accent disabled:to-base px-5 py-2 border bg-gradient-to-b from-accent to-base text-white font-medium text-xl cursor-pointer rounded-xs hover:bg-gradient-to-b hover:from-base hover:to-accent ease-in-out">
+						@if(isCalculating() === true){ 
+							Calculando...
+						}@else{
+							Calcular resultados
+						}
+					</button>
+				}
+			}
+		</div>
+	</form>
+	<!-- End form -->
+	@let result = results();
 
-        </div>
-        
-      </div>
-    </div>
-    <!-- End of future plans -->
+	@if(result !== null){
+		<!-- Resume -->
+		<div [classList]="`flex flex-col lg:flex-row justify-around items-center p-5 md:p-10 bg-[rgba(0,107,253,0.05)] gap-5 mb-5`" #resume>
+			<div [classList]="`flex flex-col gap-2 lg:w-1/2`">
+				
+				@if(result.isSavesNeeded){
+					<p>
+						Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>
+						y necesitarás <b>{{result.neededNewMonthlySaves + result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
+						<br>
+						Esto se traduce en que necesitas ahorrar <b>{{result.savesNeeded|currency:'EUR':'symbol':'1.2-2'}} en total</b>. Para conseguirlo, tendrás que ahorrar <b>{{result.neededNewMonthlySaves + result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes hasta jubilarte</b>.
+						<br>
+						Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b>,
+						lo que supondría un <b>{{result.percentageCovered}}%</b>, 
+						@if(result.percentageCovered > 100){
+							estas ahorrando un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
+						}@else {
+							necesitas ahorrar un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
+						}
+					</p>
+				}@else {
+					<p>
+						Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>, con esta jubilación puedes alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
+						<br>
+						Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b>,
+						lo que supondría que estas ahorrando un extra de <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
+					</p>
+				}
+			</div>
+			<!-- <div class="flex flex-col text-lg text-center gap-2 justify-center items-center md:w-1/2">
+				
+				<button id="downloadPdf" class="border border-base rounded-xs p-2 mt-2 lg:mt-0 text-base hover:bg-base hover:text-white cursor-pointer font-medium" (click)="generatePdf()">
+					@if(isGeneratingPdf() === true){ 
+						Creando pdf para descarga...
+					}@else{
+						Descargar cuadro amortización
+					}
+				</button>
+				
+			</div> -->
+		</div>
+		<!-- End resume -->
+	}
+	
+	<!-- Results -->
+	<!-- <div class="flex flex-col lg:flex-row mb-5 columns-2 gap-5" #list>
+		
+		<div id="list-items" class="flex flex-col text-lg gap-1 p-5 w-full lg:w-2/4">
+			<div class="flex flex-row justify-between">
+				<span>Hipoteca máxima:</span>
+				<span>{{ results().capitalNeeded|currency:'EUR':'symbol':'1.2-2' }}</span>
+			</div>
+			
+	
+			<hr class="my-4 text-[#d1d5dc] border-1">
+	
+			
+		</div>
+		
+	</div> -->
+	<!-- End Results -->
 
-    <!-- Economic situation -->
-    <div class="w-full border-1 border-base mb-5">
-      <span class="block p-4 text-xl text-white bg-base">Situación financiera</span>
-
-      <div class="p-4">
-
-        <div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
-
-          <!-- Actual saves until retirement -->
-          <div class="flex-1/2">
-            <label for="currentSaves">
-              <span class="text-lg">Ahorros actuales para la jubilación</span>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="currentSaves" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('currentSaves') ? 'border-red-700' : ''}`" type="text" name="currentSaves" id="currentSaves" placeholder="Ej: 10000"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('currentSaves') ? 'border-red-700' : ''}`">€</span>
-            </div>
-            @if(isValidField('currentSaves')){
-              <small class="text-red-700">{{getFieldError('currentSaves')}}</small>
-            }
-          </div>
-
-          <!-- Monthly saves -->
-          <div class="flex-1/2">
-            <label for="currentSavesMonthly">
-              <span class="text-lg">Aportaciones periódicas</span><button type="button" #tooltip data-tooltip-type="currentSavesMonthly" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-            </label>
-            <div class="flex flex-row align-middle mt-1">
-              <input formControlName="currentSavesMonthly" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('currentSavesMonthly') ? 'border-red-700' : ''}`" type="text" name="currentSavesMonthly" id="currentSavesMonthly" placeholder="Ej: 150"/>
-              <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('currentSavesMonthly') ? 'border-red-700' : ''}`">€</span>
-            </div>
-            @if(isValidField('currentSavesMonthly')){
-              <small class="text-red-700">{{getFieldError('currentSavesMonthly')}}</small>
-            }
-          </div>
-          
-        </div>
-
-        <!-- Annual Returns -->
-        <div class="mb-3">
-          <label for="currentReturn">
-            <span class="text-lg">Rentabilidad anual esperada</span><button type="button" #tooltip data-tooltip-type="currentReturn" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
-          </label>
-          <div class="flex flex-row align-middle mt-1">
-            <input formControlName="currentReturn" [classList]="`focus:outline-base p-3 border border-gray-300 placeholder:text-gray-400 rounded-r-none rounded-xs flex-auto ${isValidField('currentReturn') ? 'border-red-700' : ''}`" type="text" name="currentReturn" id="currentReturn" placeholder="Ej: 2,5"/>
-            <span [classList]="`border border-l-0 border-gray-300 p-3 rounded-l-none rounded-xs text-gray-400 ${isValidField('currentReturn') ? 'border-red-700' : ''}`">%</span>
-          </div>
-          @if(isValidField('currentReturn')){
-            <small class="text-red-700">{{getFieldError('currentReturn')}}</small>
-          }
-        </div>
-
-      </div>
-    
-    </div>
-    <!-- End of economic situtation -->
-
-    <!-- Calculate Button -->
-    <button type="submit" class="p-5 w-full border bg-gradient-to-b from-accent to-base text-white font-medium text-xl cursor-pointer">
-      @if(isCalculating() === true){ 
-        Calculando...
-      }@else{
-        Calcular resultados
-      }
-    </button>
-
-  </form>
-  <!-- End form -->
-
-  <!-- Resume -->
-  <div [classList]="`flex flex-col lg:flex-row justify-around items-center p-5 md:p-10 bg-[rgba(0,107,253,0.05)] gap-5 mb-5`" #resume>
-    <div [classList]="`flex flex-col gap-2 lg:w-1/2`">
-      @let result = results();
-      @if(result.isSavesNeeded){
-        <p>
-          Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>
-          y necesitarás <b>{{result.neededNewMonthlySaves + result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
-          <br>
-          Esto se traduce en que necesitas ahorrar <b>{{result.savesNeeded|currency:'EUR':'symbol':'1.2-2'}} en total</b>. Para conseguirlo, tendrás que ahorrar <b>{{result.neededNewMonthlySaves + result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes hasta jubilarte</b>.
-          <br>
-          Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b>,
-          lo que supondría un <b>{{result.percentageCovered}}%</b>, 
-          @if(result.percentageCovered > 100){
-            estas ahorrando un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
-          }@else {
-            necesitas ahorrar un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
-          }
-        </p>
-      }@else {
-        <p>
-          Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>, con esta jubilación puedes alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
-          <br>
-          Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b>,
-          lo que supondría que estas ahorrando un extra de <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes</b> para llegar a tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
-        </p>
-      }
-    </div>
-    <!-- <div class="flex flex-col text-lg text-center gap-2 justify-center items-center md:w-1/2">
-      
-      <button id="downloadPdf" class="border border-base rounded-xs p-2 mt-2 lg:mt-0 text-base hover:bg-base hover:text-white cursor-pointer font-medium" (click)="generatePdf()">
-        @if(isGeneratingPdf() === true){ 
-          Creando pdf para descarga...
-        }@else{
-          Descargar cuadro amortización
-        }
-      </button>
-      
-    </div> -->
-  </div>
-  <!-- End resume -->
-  
-  <!-- Results -->
-  <!-- <div class="flex flex-col lg:flex-row mb-5 columns-2 gap-5" #list>
-    
-    <div id="list-items" class="flex flex-col text-lg gap-1 p-5 w-full lg:w-2/4">
-      <div class="flex flex-row justify-between">
-        <span>Hipoteca máxima:</span>
-        <span>{{ results().capitalNeeded|currency:'EUR':'symbol':'1.2-2' }}</span>
-      </div>
-      
-  
-      <hr class="my-4 text-[#d1d5dc] border-1">
-  
-      
-    </div>
-    
-  </div> -->
-  <!-- End Results -->
-
-  <!-- <div class="overflow-x-auto rounded-xs bg-[rgba(0,219,183,0.05)] hidden" #table>
-    <table class="w-full text-sm text-left rtl:text-right tabular-nums">
-      <caption class="p-5 text-lg font-semibold text-left rtl:text-right">
-        Cuadro de amortización
-        <p class="mt-1 text-sm font-normal text-[#4a5565]">
-          Este cuadro representa la amortización de la hipoteca.
-        </p>
-      </caption>
-      <thead class="text-xs uppercase bg-[rgba(0,219,183,0.25)]">
-        <tr>
-          <th scope="col" class="px-3 md:px-6 py-3">
-            Mes
-          </th>
-          <th scope="col" class="px-3 md:px-6 py-3">
-            Inicial
-          </th>
-          <th scope="col" class="px-3 md:px-6 py-3">
-            Cuota
-          </th>
-          <th scope="col" class="px-3 md:px-6 py-3">
-            Intereses
-          </th>
-          <th scope="col" class="px-3 md:px-6 py-3">
-            Capital
-          </th>
-          <th scope="col" class="px-3 md:px-6 py-3">
-            Saldo Final
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        @for(period of results().amortization; track period.i){
-          <tr class="border-b border-[rgba(0,219,183,0.25)]">
-            <th scope="row" class="px-3 md:px-6 py-4 whitespace-nowrap">
-              {{ period.i }}
-            </th>
-            <td class="px-3 md:px-6 py-4">
-              {{ period.initial|currency:'EUR':'symbol':'1.2-2'}}
-            </td>
-            <td class="px-3 md:px-6 py-4">
-              {{ period.maxPayments|currency:'EUR':'symbol':'1.2-2'}}
-            </td>
-            <td class="px-3 md:px-6 py-4">
-              {{ period.tax|currency:'EUR':'symbol':'1.2-2'}} 
-            </td>
-            <td class="px-3 md:px-6 py-4">
-              {{ period.payed|currency:'EUR':'symbol':'1.2-2'}}
-            </td>
-            <td class="px-3 md:px-6 py-4">
-              {{ period.final|currency:'EUR':'symbol':'1.2-2'}}
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div> -->
+	<!-- <div class="overflow-x-auto rounded-xs bg-[rgba(0,219,183,0.05)] hidden" #table>
+		<table class="w-full text-sm text-left rtl:text-right tabular-nums">
+			<caption class="p-5 text-lg font-semibold text-left rtl:text-right">
+				Cuadro de amortización
+				<p class="mt-1 text-sm font-normal text-[#4a5565]">
+					Este cuadro representa la amortización de la hipoteca.
+				</p>
+			</caption>
+			<thead class="text-xs uppercase bg-[rgba(0,219,183,0.25)]">
+				<tr>
+					<th scope="col" class="px-3 md:px-6 py-3">
+						Mes
+					</th>
+					<th scope="col" class="px-3 md:px-6 py-3">
+						Inicial
+					</th>
+					<th scope="col" class="px-3 md:px-6 py-3">
+						Cuota
+					</th>
+					<th scope="col" class="px-3 md:px-6 py-3">
+						Intereses
+					</th>
+					<th scope="col" class="px-3 md:px-6 py-3">
+						Capital
+					</th>
+					<th scope="col" class="px-3 md:px-6 py-3">
+						Saldo Final
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for(period of results().amortization; track period.i){
+					<tr class="border-b border-[rgba(0,219,183,0.25)]">
+						<th scope="row" class="px-3 md:px-6 py-4 whitespace-nowrap">
+							{{ period.i }}
+						</th>
+						<td class="px-3 md:px-6 py-4">
+							{{ period.initial|currency:'EUR':'symbol':'1.2-2'}}
+						</td>
+						<td class="px-3 md:px-6 py-4">
+							{{ period.maxPayments|currency:'EUR':'symbol':'1.2-2'}}
+						</td>
+						<td class="px-3 md:px-6 py-4">
+							{{ period.tax|currency:'EUR':'symbol':'1.2-2'}} 
+						</td>
+						<td class="px-3 md:px-6 py-4">
+							{{ period.payed|currency:'EUR':'symbol':'1.2-2'}}
+						</td>
+						<td class="px-3 md:px-6 py-4">
+							{{ period.final|currency:'EUR':'symbol':'1.2-2'}}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div> -->
 
 </div>
