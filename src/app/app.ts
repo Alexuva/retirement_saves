@@ -47,7 +47,7 @@ export class App {
   table: Signal<ElementRef<HTMLElement> | undefined> = viewChild<ElementRef<HTMLElement>>('table');
 
   retirementForm: FormGroup = this.fb.group({
-    currentAge: ['', [Validators.required, Validators.min(16), integerValidation]],
+    currentAge: ['', [Validators.required, Validators.min(16), Validators.max(85), integerValidation]],
     yearlyIncome: ['', [Validators.required, decimalMinValidation(12000), decimalsValidation]],
     yearsContributing: ['', [Validators.required, Validators.min(0), Validators.max(70), integerValidation]],
     regime: ['ajena'],
@@ -149,7 +149,7 @@ export class App {
         
         case 'yearlyIncome':
           tippy(tooltip.nativeElement, {
-            content: 'Indica tu salario bruto anual, incluidos los pagos a la Seguridad Social.',
+            content: 'Indica tu salario bruto anual o el rendimiento neto de tu actividad económica si eres autónomo.',
             animation: 'scale'
           })
         break;
@@ -278,6 +278,9 @@ export class App {
           return `El mínimo es ${this.currencyPipe.transform(errors['min'].min, 'EUR', 'symbol', '1.2-2')}`;
 
         case 'max':
+          if(['currentAge', 'retirementAge'].includes(fieldName)){
+            return `El máximo son ${errors['max'].max} años`;
+          }
           return `El máximo es ${this.currencyPipe.transform(errors['max'].max, 'EUR', 'symbol', '1.2-2')}`;
         
         case 'decimal':
