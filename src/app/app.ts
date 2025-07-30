@@ -86,41 +86,13 @@ export class App {
     });
   }
 
-  onAnimationEnd(){
-    return true;
+  resetResult(): void{
+    this.results.set(null);
   }
 
   nextStep():void {
-
-    const firstStep = this.firstStep();
-    const secondStep = this.secondStep();
-    const thirdStep = this.thirdStep();
-
-    switch(this.currentStep()){
-
-      case 1: 
-        if(firstStep) firstStep.nativeElement.classList.add('slide-out');
-        if(secondStep) secondStep.nativeElement.classList.add('slide-in');
-        if(this.onAnimationEnd() === true){
-          this.currentStep.update(step => step + 1);
-        }
-      break;
-
-      case 2:
-        const animationEnded = this.onAnimationEnd();
-
-        if(firstStep) firstStep.nativeElement.classList.add('slide-out');
-        if(secondStep) secondStep.nativeElement.classList.add('slide-out');
-        if(thirdStep) thirdStep.nativeElement.classList.add('slide-in');
-
-        if(this.onAnimationEnd() === true){
-          this.currentStep.update(step => step + 1);
-        }
-      break;
-    }
-
-    // if(this.currentStep() >= 3) return;
-    // this.currentStep.update(step => step + 1);
+    if(this.currentStep() >= 3) return;
+    this.currentStep.update(step => step + 1);
   }
 
   previousStep():void {
@@ -276,8 +248,6 @@ export class App {
     this.retirementSavesService.retirementData.set(normalized_values);
     this.results.set(this.retirementSavesService.retirementResult());
     this.isCalculating.set(false);
-    const resume = this.resume();
-    if(resume) resume.nativeElement.scrollIntoView({behavior: 'smooth'});
   }
 
   isValidField( fieldName: string ): boolean | null {

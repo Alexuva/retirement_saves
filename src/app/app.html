@@ -61,7 +61,7 @@
 		@switch (currentStep()) {
 			@case (1){
 				<!-- Actual situation -->
-				<div class="w-full border-1 border-base mb-5" #firstStep>
+				<div class="w-full border-1 border-base mb-5" animate.enter="fade-in" #firstStep>
 					<span class="block p-4 text-xl text-white bg-base">Situación actual</span>
 					<div class="p-4">
 						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
@@ -172,7 +172,7 @@
 
 			@case (2){
 				<!-- Future plans -->
-				<div class="w-full border-1 border-base mb-5" #secondStep (animationend)="onAnimationEnd()">
+				<div class="w-full border-1 border-base mb-5" animate.enter="fade-in" #secondStep>
 					<span class="block p-4 text-xl text-white bg-base">Planes de futuro</span>
 
 					<div class="p-4">
@@ -216,7 +216,7 @@
 
 			@case (3){
 				<!-- Economic situation -->
-				<div class="w-full border-1 border-base mb-5" #thirdStep>
+				<div class="w-full border-1 border-base mb-5" animate.enter="fade-in" #thirdStep>
 					<span class="block p-4 text-xl text-white bg-base">Situación financiera</span>
 
 					<div class="p-4">
@@ -294,7 +294,7 @@
 				}
 				@case (3){
 					<!-- Back Step -->
-					<button type="button" [disabled]="!verifyStep(3)" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:border-base disabled:text-base px-4 py-2 font-medium border-1 text-xl rounded-xs cursor-pointer border-base text-base hover:border-black hover:text-black transition-all ease-in-out duration-150" (click)="previousStep()">
+					<button type="button" [disabled]="!verifyStep(3)" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:border-base disabled:text-base px-4 py-2 font-medium border-1 text-xl rounded-xs cursor-pointer border-base text-base hover:border-black hover:text-black transition-all ease-in-out duration-150" (click)="previousStep()" (click)="resetResult()">
 						Volver
 					</button>
 					<!-- Calculate Button -->
@@ -314,7 +314,7 @@
 
 	@if(result !== null){
 		<!-- Resume -->
-		<div [classList]="`flex flex-col lg:flex-row justify-around items-center p-5 md:p-10 bg-[rgba(0,107,253,0.05)] gap-5 mb-5`" #resume>
+		<div [classList]="`flex flex-col lg:flex-row justify-around items-center p-5 md:p-10 bg-[rgba(0,107,253,0.05)] gap-5 mb-5 ${result !== null ? 'fade-in': ''}`"  #resume>
 			<div [classList]="`flex flex-col gap-2 lg:w-1/2`">
 				
 				@if(result.isSavesNeeded){

@@ -1,14 +1,71 @@
 @import '../styles.css';
 
-.slide-in {
-    animation: slideIn 0.5s ease-out forwards;
+.in-left {
+    animation: inLeft 0.5s ease-out forwards;
 }
 
-.slide-out {
-    animation: slideOut 0.5s ease-in forwards;
+.out-left {
+    animation: outLeft 50ms ease-out forwards;
 }
 
-@keyframes slideIn {
+.in-right {
+    animation: inRight 0.5s ease-out forwards;
+}
+
+.out-right {
+    animation: outRight 50ms ease-out forwards;
+}
+
+.fade-out {
+    animation: fadeOut 50ms ease-in forwards;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Fade in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+/* Fade out */
+@keyframes fadeOut {
+    from{
+        opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+}
+
+/* In from left */
+@keyframes inLeft {
+    from{
+        opacity: 0;
+        transform: translateX(-120%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+}
+
+/* Out to left */
+@keyframes outLeft {
+    to {
+      opacity: 0;
+      transform: translateX(-120%);
+    }
+}
+
+/* In from right */
+@keyframes inRight {
     from{
         opacity: 0;
         transform: translateX(120%);
@@ -19,13 +76,10 @@
     }
 }
 
-@keyframes slideOut {
-    from{
-        opacity: 1;
-        transform: translateX(0);
-    }
+/* Out to right */
+@keyframes outRight {
     to {
       opacity: 0;
-      transform: translateX(-120%);
+      transform: translateX(120%);
     }
 }
