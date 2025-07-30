@@ -40,6 +40,9 @@ export class App {
   private retirementSavesService = inject(RetirementSaves);
 
   currentStep: WritableSignal<number> = signal(1);
+  firstStep: Signal<ElementRef<HTMLElement>|undefined> = viewChild<ElementRef<HTMLElement>>('firstStep');
+  secondStep: Signal<ElementRef<HTMLElement>|undefined> = viewChild<ElementRef<HTMLElement>>('secondStep');
+  thirdStep: Signal<ElementRef<HTMLElement>|undefined> = viewChild<ElementRef<HTMLElement>>('thirdStep');
   
   tooltips: Signal<readonly ElementRef<HTMLButtonElement>[]> = viewChildren<ElementRef<HTMLButtonElement>>('tooltip');
   resume: Signal<ElementRef<HTMLElement> | undefined> = viewChild<ElementRef<HTMLElement>>('resume');
@@ -83,9 +86,41 @@ export class App {
     });
   }
 
+  onAnimationEnd(){
+    return true;
+  }
+
   nextStep():void {
-    if(this.currentStep() >= 3) return;
-    this.currentStep.update(step => step + 1);
+
+    const firstStep = this.firstStep();
+    const secondStep = this.secondStep();
+    const thirdStep = this.thirdStep();
+
+    switch(this.currentStep()){
+
+      case 1: 
+        if(firstStep) firstStep.nativeElement.classList.add('slide-out');
+        if(secondStep) secondStep.nativeElement.classList.add('slide-in');
+        if(this.onAnimationEnd() === true){
+          this.currentStep.update(step => step + 1);
+        }
+      break;
+
+      case 2:
+        const animationEnded = this.onAnimationEnd();
+
+        if(firstStep) firstStep.nativeElement.classList.add('slide-out');
+        if(secondStep) secondStep.nativeElement.classList.add('slide-out');
+        if(thirdStep) thirdStep.nativeElement.classList.add('slide-in');
+
+        if(this.onAnimationEnd() === true){
+          this.currentStep.update(step => step + 1);
+        }
+      break;
+    }
+
+    // if(this.currentStep() >= 3) return;
+    // this.currentStep.update(step => step + 1);
   }
 
   previousStep():void {
