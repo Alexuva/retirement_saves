@@ -64,10 +64,10 @@
 				<div class="w-full border-1 border-base mb-5" animate.enter="fade-in" #firstStep>
 					<span class="block p-4 text-xl text-white bg-base">Situación actual</span>
 					<div class="p-4">
-						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
+						<!-- <div class="flex flex-col md:flex-row gap-4 justify-between mb-3"> -->
 
 							<!-- Age -->
-							<div class="flex-1/2">
+							<div class="mb-3">
 								<label for="currentAge">
 									<span class="text-lg">Edad</span>
 								</label>
@@ -79,9 +79,9 @@
 									<small class="text-red-700">{{getFieldError('currentAge')}}</small>
 								}
 							</div>
-		
+					
 							<!-- Annual income -->
-							<div class="flex-1/2">
+							<div class="mb-3">
 								<label for="yearlyIncome">
 									<span class="text-lg">Ingresos anuales brutos / Rendimiento neto de actividad</span><button type="button" #tooltip data-tooltip-type="yearlyIncome" class="focus:outline-base bg-accent mx-1 px-2 rounded-full text-sm">i</button>
 								</label>
@@ -94,7 +94,7 @@
 								}
 							</div>
 		
-						</div>
+						<!-- </div> -->
 					
 						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
 		
