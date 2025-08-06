@@ -1,4 +1,5 @@
 import { computed, Injectable, signal, WritableSignal } from '@angular/core';
+import { parse } from 'postcss';
 
 export type RetirementData = {
   currentAge: number,
@@ -38,14 +39,14 @@ export class RetirementSaves {
     currentReturn: 2.5
   })
 
-  retirementResult = computed(()=>{
-    
+  retirementResult = computed(() => {
+
     //1. Get data
     const data = this.retirementData();
     //2. Calculate each salary until retirement
     const salaries = this.projectSalaries(this.retirementData().yearlyIncome, this.retirementData().annualSalaryIncrease, this.retirementData().currentAge, this.retirementData().retirementAge, this.retirementData().yearsContributing);
     //3. Calculate bases of each salary
-    const bases = salaries.map( income => this.contributionBase(data, income) );
+    const bases = salaries.map(income => this.contributionBase(data, income));
     //4. Calculate regulatory base with the information of each salary
     const regulatoryBase = this.regulatoryBase(bases);
     //5. Calculate the percentage that the person has the right to earn
@@ -60,7 +61,7 @@ export class RetirementSaves {
     const compoundCalculator = this.compoundCalculator(data.currentSaves, data.currentSavesMonthly, data.currentReturn, data.currentAge, data.retirementAge, data.annualInflation);
 
     //9. If no need to save, return
-    if(!isSavesNeeded){
+    if (!isSavesNeeded) {
       return {
         data,
         monthlyRetirement,
@@ -81,10 +82,10 @@ export class RetirementSaves {
     //11. Calculates the capital needed to be able to do 3% annual
     const capitalNeeded = this.capitalNeeded(savesNeeded);
     //12. Calculates the monthly saves to get to the objective with compound interest
-    const compoundCalculatorToReachGoal = this.compoundCalculatorToReachGoal(capitalNeeded, data.currentSaves, data.currentAge, data.retirementAge, data.currentReturn, data.annualInflation);
+    const compoundCalculatorToReachGoal = this.compoundCalculatorToReachGoal(capitalNeeded, data.currentSaves, data.currentSavesMonthly, data.currentAge, data.retirementAge, data.currentReturn, data.annualInflation);
     //13. Calculates the percentage cover by the current saves in the future
     const percentageCovered = this.percentageCovered(capitalNeeded, compoundCalculator);
-    //14. Calculates the needed monthly saves diff 
+    //14. Calculates the needed monthly saves diff
     const neededNewMonthlySaves = this.neededNewMonthlySaves(compoundCalculatorToReachGoal, data.currentSavesMonthly);
 
     return {
@@ -100,7 +101,7 @@ export class RetirementSaves {
       percentageCovered,
       neededNewMonthlySaves
     }
-    
+
   })
 
   /**
@@ -112,15 +113,15 @@ export class RetirementSaves {
    * @param yearsContributing number, year contributing
    * @returns array of numbers that represents the salary of each year
    */
-  projectSalaries(yearlyIncome:number, annualSalaryIncrease:number, currentAge:number, retirementAge:number, yearsContributing:number):number[] {
-    const yearsLeft:number = retirementAge - currentAge;
-    const totalYears:number = yearsLeft + yearsContributing;
+  projectSalaries(yearlyIncome: number, annualSalaryIncrease: number, currentAge: number, retirementAge: number, yearsContributing: number): number[] {
+    const yearsLeft: number = retirementAge - currentAge;
+    const totalYears: number = yearsLeft + yearsContributing;
 
-    const salaries:number[] = [];
+    const salaries: number[] = [];
 
-    for(let i:number = 0; i < totalYears; i++){
+    for (let i: number = 0; i < totalYears; i++) {
       salaries.push(parseFloat(yearlyIncome.toFixed(2)));
-      if(i >= (yearsContributing - 1) && annualSalaryIncrease > 0){
+      if (i >= (yearsContributing - 1) && annualSalaryIncrease > 0) {
         yearlyIncome *= (1 + (annualSalaryIncrease / 100));
       }
     }
@@ -131,42 +132,42 @@ export class RetirementSaves {
   /**
    * Calculates the contribution base of a salary
    * @param retirementData signal that includes the form data
-   * @param yearlyIncome number that represents the yearly income 
+   * @param yearlyIncome number that represents the yearly income
    * @returns number that represents the contribution base
    */
-  contributionBase(retirementData:RetirementData, yearlyIncome:number):number {
+  contributionBase(retirementData: RetirementData, yearlyIncome: number): number {
 
     const percentage = yearlyIncome * 0.28;
     const income = yearlyIncome / 12;
 
     let base = 0;
 
-    if(retirementData.regime === RegimeType.AJENA){
+    if (retirementData.regime === RegimeType.AJENA) {
 
       const bases = { min: 1381.20, max: 4909.50 }
 
-      if(income < bases.min){
+      if (income < bases.min) {
         base = bases.min;
-      }else if(income > bases.max){
+      } else if (income > bases.max) {
         base = bases.max;
-      }else{
+      } else {
         base = income;
       }
 
-    }else{
-        
+    } else {
+
       const reducedBases = {
         step_1: {
           condition: { min: 0, max: 670 },
-          bases:{ min: 653.59, max: 718.94 }
+          bases: { min: 653.59, max: 718.94 }
         },
         step_2: {
           condition: { min: 670, max: 900 },
-          bases: { min: 718.95, max:900 }
+          bases: { min: 718.95, max: 900 }
         },
         step_3: {
           condition: { min: 900, max: 1166.70 },
-          bases: { min: 849.67, max:1166.70 }
+          bases: { min: 849.67, max: 1166.70 }
         }
       }
 
@@ -223,37 +224,37 @@ export class RetirementSaves {
 
       //If the ammount earn is bigger than the last step in the reduced table,
       // then we search for the base in the general table.
-      if(income > reducedBases.step_3.condition.max){
+      if (income > reducedBases.step_3.condition.max) {
 
-        for(const step of Object.keys(generalBases) as Array< keyof typeof generalBases >){
+        for (const step of Object.keys(generalBases) as Array<keyof typeof generalBases>) {
 
-          const min:number = generalBases[step].condition.min;
-          const max:number = generalBases[step].condition.max;
-          const minBase:number = generalBases[step].bases.min;
-          const maxBase:number = generalBases[step].bases.max;
+          const min: number = generalBases[step].condition.min;
+          const max: number = generalBases[step].condition.max;
+          const minBase: number = generalBases[step].bases.min;
+          const maxBase: number = generalBases[step].bases.max;
 
-          if(income >= min && income <= max){
+          if (income >= min && income <= max) {
 
             base = (income === max) ? maxBase : minBase;
-            
+
             break;
           }
-          
+
         }
 
-      }else{
+      } else {
 
-        for(const step of Object.keys(reducedBases) as Array< keyof typeof reducedBases >){
+        for (const step of Object.keys(reducedBases) as Array<keyof typeof reducedBases>) {
 
-          const min:number = reducedBases[step].condition.min;
-          const max:number = reducedBases[step].condition.max;
-          const minBase:number = reducedBases[step].bases.min;
-          const maxBase:number = reducedBases[step].bases.max;
+          const min: number = reducedBases[step].condition.min;
+          const max: number = reducedBases[step].condition.max;
+          const minBase: number = reducedBases[step].bases.min;
+          const maxBase: number = reducedBases[step].bases.max;
 
-          if(income >= min && income <= max){
+          if (income >= min && income <= max) {
 
             base = (income === max) ? maxBase : minBase;
-            
+
             break;
           }
 
@@ -272,10 +273,10 @@ export class RetirementSaves {
    * @param contributionBases number[] that represents the bases of each year
    * @returns number that represents the regulatory base
    */
-  regulatoryBase(contributionBases:number[]):number{
-    const contributionMonthlyBases:number[] = contributionBases.flatMap( monthlyBase => Array(12).fill(monthlyBase)) //Creates an array with all the monthlybases
-    const lastMonths:number[] = contributionMonthlyBases.slice(-300);
-    const sum:number = lastMonths.reduce((acc, val) => acc + val, 0);
+  regulatoryBase(contributionBases: number[]): number {
+    const contributionMonthlyBases: number[] = contributionBases.flatMap(monthlyBase => Array(12).fill(monthlyBase)) //Creates an array with all the monthlybases
+    const lastMonths: number[] = contributionMonthlyBases.slice(-300);
+    const sum: number = lastMonths.reduce((acc, val) => acc + val, 0);
     return parseFloat((sum / 350).toFixed(2));
   }
 
@@ -286,7 +287,7 @@ export class RetirementSaves {
    * @param currentAge `number` that represents the current age
    * @returns `number` that represents the % of the payment that the person has the right to earn.
    */
-  retirementPercentage(retirementAge:number, yearsContributing:number, currentAge:number):number {
+  retirementPercentage(retirementAge: number, yearsContributing: number, currentAge: number): number {
 
     const date = new Date();
     const year = date.getFullYear();
@@ -298,29 +299,29 @@ export class RetirementSaves {
     let percentage = 0;
 
     //If less than 15 years contributing
-    if(!isRightToRetire) return percentage;
+    if (!isRightToRetire) return percentage;
 
     //If has more than 15 years, already has the right to have 50%
     percentage += 50;
 
-    if(lawYear === 2026){
+    if (lawYear === 2026) {
 
       const additionalMonths = totalContributingMonths - 180;
 
-      if(additionalMonths > 0){
+      if (additionalMonths > 0) {
         const additionalFirstPercentage = additionalMonths <= 49 ? parseFloat((additionalMonths * 0.21).toFixed(2)) : parseFloat((49 * 0.21).toFixed(2));
         const additionalSecondPercentage = (additionalMonths - 49) > 0 ? parseFloat(((additionalMonths - 49) * 0.19).toFixed(2)) : 0;
-        percentage += (additionalFirstPercentage + additionalSecondPercentage)    
+        percentage += (additionalFirstPercentage + additionalSecondPercentage)
       }
 
-    }else{
+    } else {
 
       const additionalMonths = totalContributingMonths - 180;
 
-      if(additionalMonths > 0){
+      if (additionalMonths > 0) {
         const additionalFirstPercentage = additionalMonths <= 248 ? parseFloat((additionalMonths * 0.19).toFixed(2)) : parseFloat((248 * 0.19).toFixed(2));
         const additionalSecondPercentage = (additionalMonths - 248) > 0 ? parseFloat(((additionalMonths - 248) * 0.18).toFixed(2)) : 0;
-        percentage += (additionalFirstPercentage + additionalSecondPercentage)    
+        percentage += (additionalFirstPercentage + additionalSecondPercentage)
       }
 
     }
@@ -339,35 +340,35 @@ export class RetirementSaves {
    * @param annualInflation `number` that represents the inflation each year
    * @returns `number` that represents the monthly payment adjust by inflation
    */
-  monthlyRetirementPayment(retirementAge:number, retirementPercentage:number, regulatoryBase:number, currentAge:number, yearsContributing:number, annualInflation:number):number {
-    
+  monthlyRetirementPayment(retirementAge: number, retirementPercentage: number, regulatoryBase: number, currentAge: number, yearsContributing: number, annualInflation: number): number {
+
     const remainingYears = retirementAge - currentAge;
     let monthlyRetirementPayment = 0;
 
-    if(retirementAge >= 65){
-      monthlyRetirementPayment =  regulatoryBase * (retirementPercentage / 100);
+    if (retirementAge >= 65) {
+      monthlyRetirementPayment = regulatoryBase * (retirementPercentage / 100);
       return annualInflation > 0 ? parseFloat((monthlyRetirementPayment * Math.pow(1 + (annualInflation / 100), remainingYears)).toFixed(2)) : parseFloat(monthlyRetirementPayment.toFixed(2));
     }
 
     const totalContributingYears = (retirementAge - currentAge) + yearsContributing;
-    
-    switch(true){
+
+    switch (true) {
 
       case totalContributingYears < 38:
         monthlyRetirementPayment = retirementAge === 63 ? parseFloat(((regulatoryBase * (retirementPercentage / 100)) * (1 - 0.21)).toFixed(2)) : parseFloat(((regulatoryBase * (retirementPercentage / 100)) * (1 - 0.0550)).toFixed(2));
-      break;
+        break;
 
       case totalContributingYears >= 38 && totalContributingYears < 41:
         monthlyRetirementPayment = retirementAge === 63 ? parseFloat(((regulatoryBase * (retirementPercentage / 100)) * (1 - 0.19)).toFixed(2)) : parseFloat(((regulatoryBase * (retirementPercentage / 100)) * (1 - 0.0525)).toFixed(2));
-      break;
+        break;
 
       case totalContributingYears >= 41 && totalContributingYears < 44:
         monthlyRetirementPayment = retirementAge === 63 ? parseFloat(((regulatoryBase * (retirementPercentage / 100)) * (1 - 0.17)).toFixed(2)) : parseFloat(((regulatoryBase * (retirementPercentage / 100)) * (1 - 0.05)).toFixed(2));
-      break;
+        break;
 
       case totalContributingYears >= 44:
         monthlyRetirementPayment = retirementAge === 63 ? parseFloat(((regulatoryBase * (retirementPercentage / 100)) * (1 - 0.13)).toFixed(2)) : parseFloat(((regulatoryBase * (retirementPercentage / 100)) * (1 - 0.475)).toFixed(2));
-      break;
+        break;
     }
 
     return annualInflation > 0 ? parseFloat((monthlyRetirementPayment * Math.pow(1 + (annualInflation / 100), remainingYears)).toFixed(2)) : parseFloat(monthlyRetirementPayment.toFixed(2));
@@ -378,12 +379,12 @@ export class RetirementSaves {
    * Calculates if the person needs saves in order to fullfill the objective
    * @param monthlyRetirementPayment `number` that represents the retirement payment each month
    * @param retirementMonthlyObjective `number` that represents the retirement payment that the person wants to have
-   * @param annualInflation `number` that represents the annual inflation 
+   * @param annualInflation `number` that represents the annual inflation
    * @param currentAge `number` that represents the current age of the user
    * @param retirementAge `number` that represents the age of retirement
    * @returns `boolean` that represents if the user needs to have saves to get to the objective
    */
-  isSavesNeeded(monthlyRetirementPayment:number, retirementMonthlyObjective:number, annualInflation:number, currentAge:number, retirementAge:number):boolean {
+  isSavesNeeded(monthlyRetirementPayment: number, retirementMonthlyObjective: number, annualInflation: number, currentAge: number, retirementAge: number): boolean {
 
     const yearsUntilRetirement = retirementAge - currentAge;
 
@@ -391,7 +392,7 @@ export class RetirementSaves {
 
     const adjustedMonthlyPension = (monthlyRetirementPayment * 14) / 12;
 
-    if(adjustedMonthlyPension >= adjustedObjective) return false;
+    if (adjustedMonthlyPension >= adjustedObjective) return false;
 
     return true;
   }
@@ -405,8 +406,8 @@ export class RetirementSaves {
    * @param retirementAge `number`
    * @returns `number` represents the saves needed in order to get to the objective once retire
    */
-  savesNeeded(monthlyRetirementPayment:number, retirementMonthlyObjective:number, annualInflation:number, currentAge:number, retirementAge:number):number {
-    
+  savesNeeded(monthlyRetirementPayment: number, retirementMonthlyObjective: number, annualInflation: number, currentAge: number, retirementAge: number): number {
+
     const yearsUntilRetirement = retirementAge - currentAge;
 
     const adjustedObjective = retirementMonthlyObjective * Math.pow(1 + (annualInflation / 100), yearsUntilRetirement);
@@ -423,7 +424,7 @@ export class RetirementSaves {
    * @param savesNeeded `number` saves needed before retire
    * @returns `number` represents the capital needed to be able to retire 3%
    */
-  capitalNeeded(savesNeeded:number):number {
+  capitalNeeded(savesNeeded: number): number {
 
     const capital = savesNeeded * ((1 - Math.pow((1 + (3 / 100)), -25)) / (3 / 100));
 
@@ -435,13 +436,13 @@ export class RetirementSaves {
    * @param currentSaves `number` that represents the current saves that the user has
    * @param currentSavesMonthly `number` that represents the current saves that the user has
    * @param currentReturn `number` that represents the current annual return
-   * @param currentAge `number` that represents the current age 
+   * @param currentAge `number` that represents the current age
    * @param retirementAge `number` that represents the retirement age
    * @param annualInflation `number` that represents the annual inflation
    * @returns `number` that represents the total earn with the compound interest
    */
-  compoundCalculator(currentSaves:number, currentSavesMonthly:number, currentReturn:number, currentAge:number, retirementAge:number, annualInflation:number):number {
-    
+  compoundCalculator(currentSaves: number, currentSavesMonthly: number, currentReturn: number, currentAge: number, retirementAge: number, annualInflation: number): number {
+
     const interest = currentReturn / 100
     const inflation = annualInflation / 100;
     const months = (retirementAge - currentAge) * 12;
@@ -458,30 +459,40 @@ export class RetirementSaves {
    * Calculates the monthly saves that the person needs to get to an objective
    * @param targetSavings `number`
    * @param currentSaves `number`
+   * @param currentMonthlyContribution `number`
    * @param currentAge `number`
    * @param retirementAge `number`
    * @param currentReturn `number`
    * @param annualInflation `number`
    * @returns `number` monthly saves to get to the objective
    */
-  compoundCalculatorToReachGoal(targetSavings: number, currentSaves: number, currentAge: number, retirementAge: number, currentReturn: number, annualInflation: number): number {
-    
+  compoundCalculatorToReachGoal(targetSavings: number, currentSaves: number, currentMonthlyContribution: number, currentAge: number, retirementAge: number, currentReturn: number, annualInflation: number): number {
+
     const interest = currentReturn / 100;
     const inflation = annualInflation / 100;
     const months = (retirementAge - currentAge) * 12;
 
+    //Return adjusted by inflation
     const monthlyAdjustedReturn = (((1 + interest) / (1 + inflation)) - 1) / 12;
 
-    if (monthlyAdjustedReturn === 0) {
-        return (targetSavings - currentSaves) / months;
-    }
-
+    //Future value actual savings
     const futureValueSavings = currentSaves * Math.pow(1 + monthlyAdjustedReturn, months);
-    const requiredSavings = targetSavings - futureValueSavings;
 
-    const monthlyContribution = requiredSavings * monthlyAdjustedReturn / (Math.pow(1 + monthlyAdjustedReturn, months) - 1);
+    //Future value monthly savings
+    const futureValueContributions = currentMonthlyContribution * ((Math.pow(1 + monthlyAdjustedReturn, months) - 1) / monthlyAdjustedReturn);
 
-    return parseFloat(monthlyContribution.toFixed(2));
+    //Total projected
+    const projectedTotal = futureValueSavings + futureValueContributions;
+
+    if (projectedTotal >= targetSavings) return 0;
+
+    //What needs to save additional
+    const remainingNeeded = targetSavings - projectedTotal;
+
+    const additionalMonthlyContribution = remainingNeeded * monthlyAdjustedReturn / (Math.pow(1 + monthlyAdjustedReturn, months) - 1);
+
+    return parseFloat(additionalMonthlyContribution.toFixed(2));
+
   }
 
   /**
@@ -490,7 +501,7 @@ export class RetirementSaves {
    * @param currentObjectiveSaves `number`
    * @returns `number`
    */
-  percentageCovered(capitalNeeded:number, currentObjectiveSaves:number):number {
+  percentageCovered(capitalNeeded: number, currentObjectiveSaves: number): number {
 
     const percentage = parseFloat(((currentObjectiveSaves / capitalNeeded) * 100).toFixed(2))
 
@@ -503,21 +514,20 @@ export class RetirementSaves {
    * @param currentSavesMonthly `number`
    * @returns `number`
    */
-  neededNewMonthlySaves(neededSavesMonthly:number, currentSavesMonthly:number):number {
-
+  neededNewMonthlySaves(neededSavesMonthly: number, currentSavesMonthly: number): number {
     const newSaves = parseFloat((neededSavesMonthly - currentSavesMonthly).toFixed(2));
 
     return newSaves;
   }
 
   /**
-   * Calculates the inflation 
+   * Calculates the inflation
    * @param initialAmmount `number`
    * @param years `number`
    * @param inflation `number`
    * @returns `number`
    */
-  calculateInflation(initialAmmount:number, years:number, inflation:number):number {
+  calculateInflation(initialAmmount: number, years: number, inflation: number): number {
     return initialAmmount * Math.pow(1 + (inflation / 100), years);
   }
 }

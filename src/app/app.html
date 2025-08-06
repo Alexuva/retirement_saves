@@ -79,7 +79,7 @@
 									<small class="text-red-700">{{getFieldError('currentAge')}}</small>
 								}
 							</div>
-					
+
 							<!-- Annual income -->
 							<div class="mb-3">
 								<label for="yearlyIncome">
@@ -93,11 +93,11 @@
 									<small class="text-red-700">{{getFieldError('yearlyIncome')}}</small>
 								}
 							</div>
-		
+
 						<!-- </div> -->
-					
+
 						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
-		
+
 							<!-- Contribution years -->
 							<div class="flex-1/2">
 								<label for="yearsContributing">
@@ -111,7 +111,7 @@
 									<small class="text-red-700">{{getFieldError('yearsContributing')}}</small>
 								}
 							</div>
-		
+
 							<!-- Contribution Regime -->
 							<div class="flex-1/2">
 								<label for="regime">
@@ -130,11 +130,11 @@
 									</div>
 								</div>
 							</div>
-		
+
 						</div>
-		
+
 						<div class="flex flex-col md:flex-row gap-4 justify-between mb-3">
-		
+
 							<!-- Annual salary increase -->
 							<div class="flex-1/2">
 								<label for="annualSalaryIncrease">
@@ -148,7 +148,7 @@
 									<small class="text-red-700">{{getFieldError('annualSalaryIncrease')}}</small>
 								}
 							</div>
-		
+
 							<!-- Annual inflation -->
 							<div class="flex-1/2">
 								<label for="annualInflation">
@@ -162,9 +162,9 @@
 									<small class="text-red-700">{{getFieldError('annualInflation')}}</small>
 								}
 							</div>
-		
+
 						</div>
-		
+
 					</div>
 				</div>
 				<!-- End of actual situation -->
@@ -208,7 +208,7 @@
 							</div>
 
 						</div>
-						
+
 					</div>
 				</div>
 				<!-- End of future plans -->
@@ -250,7 +250,7 @@
 									<small class="text-red-700">{{getFieldError('currentSavesMonthly')}}</small>
 								}
 							</div>
-							
+
 						</div>
 
 						<!-- Annual Returns -->
@@ -299,7 +299,7 @@
 					</button>
 					<!-- Calculate Button -->
 					<button type="submit" [disabled]="!verifyStep(3)" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gradient-to-b disabled:from-accent disabled:to-base px-5 py-2 border bg-gradient-to-b from-accent to-base text-white font-medium text-xl cursor-pointer rounded-xs hover:bg-gradient-to-b hover:from-base hover:to-accent ease-in-out">
-						@if(isCalculating() === true){ 
+						@if(isCalculating() === true){
 							Calculando...
 						}@else{
 							Calcular resultados
@@ -316,73 +316,77 @@
 		<!-- Resume -->
 		<div [classList]="`flex flex-col lg:flex-row justify-around items-center p-5 md:p-10 bg-[rgba(0,107,253,0.05)] gap-5 mb-5 ${result !== null ? 'fade-in': ''}`"  #resume>
 			<div [classList]="`flex flex-col gap-2`">
-				
+
 				@if(result.isSavesNeeded){
 					<p>
-						Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, 
+						Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>,
 						tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>
-						y necesitarás <b>{{result.data.retirementMonthlyObjective - result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
-					</p>
-					<p>	
-						Esto se traduce en que necesitas ahorrar <b>{{result.capitalNeeded|currency:'EUR':'symbol':'1.2-2'}} en total</b>.
-						Para conseguirlo necesitas ahorrar <b>{{result.neededNewMonthlySaves + result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes</b>
-						@if(result.percentageCovered >= 100){
-							. Ahora mismo estás ahorrando un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> respecto a lo que necesitas.
-						}@else {
-							, lo que supone <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> más de lo que ahorras actualmente.
-						}
+						y necesitarás <b>{{result.data.retirementMonthlyObjective - result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación). }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}}. }</b>
 					</p>
 					<p>
-						Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b>.
-						Esto supone un <b>{{result.percentageCovered}}%</b> de la renta mensual que quieres tener. 
+						Esto se traduce en que necesitas ahorrar <b>{{result.capitalNeeded|currency:'EUR':'symbol':'1.2-2'}} en total.</b>
+            @if(result.compoundCalculatorToReachGoal > 0){
+              Para conseguirlo necesitas ahorrar <b>{{result.compoundCalculatorToReachGoal|currency:'EUR':'symbol':'1.2-2'}} al mes.</b>
+            }
+            @if(result.data.currentsavesmonthly > 0){
+              @if(result.percentageCovered >= 100 && result.data.currentSavesMonthly > 0){
+							  . Ahora mismo estás ahorrando un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> respecto a lo que necesitas.
+						  }@else {
+							  , lo que supone <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> más de lo que ahorras actualmente.
+						  }
+            }
+					</p>
+					<p>
+						Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> @if(result.data.currentSavesMonthly > 0){ y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>}, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}.</b>
+						Esto supone un <b>{{result.percentageCovered}}%</b> de la renta mensual que quieres tener.
 					</p>
 				}@else {
 					<p>
-						Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>, 
-						tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>
-						y necesitarás <b>{{0|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
+						Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>,
+						tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}.</b>
+            No necesitas ahorrar para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación). }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}}. }</b>
 					</p>
-					<p>
-						Esto se traduce en que necesitas ahorrar <b>{{0|currency:'EUR':'symbol':'1.2-2'}} en total</b>.
-						Para conseguirlo necesitas ahorrar <b>{{0|currency:'EUR':'symbol':'1.2-2'}} al mes.</b>
+          @if(result.data.currentSavesMonthly > 0){
+          <p>
 						Ahora mismo estás ahorrando un extra de <b>{{abs(result.data.currentSavesMonthly)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> respecto a lo que necesitas.
 					</p>
+          }
 					<p>
-						Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b> 
-						y la renta mensual de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }</b>.
+						Con tu punto de partida actual de <b>{{result.data.currentSaves|currency:'EUR':'symbol':'1.2-2'}}</b> @if(result.data.currentSavesMonthly > 0){ y tu plan de aportar mensualmente <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}}</b>}, alcanzarías los <b>{{result.compoundCalculator|currency:'EUR':'symbol':'1.2-2'}}</b>
+						y la renta mensual de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación) }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}} }.</b>
 					</p>
 				}
 			</div>
 			<!-- <div class="flex flex-col text-lg text-center gap-2 justify-center items-center md:w-1/2">
-				
+
 				<button id="downloadPdf" class="border border-base rounded-xs p-2 mt-2 lg:mt-0 text-base hover:bg-base hover:text-white cursor-pointer font-medium" (click)="generatePdf()">
-					@if(isGeneratingPdf() === true){ 
+					@if(isGeneratingPdf() === true){
 						Creando pdf para descarga...
 					}@else{
 						Descargar cuadro amortización
 					}
 				</button>
-				
+
 			</div> -->
 		</div>
 		<!-- End resume -->
 	}
-	
+
 	<!-- Results -->
 	<!-- <div class="flex flex-col lg:flex-row mb-5 columns-2 gap-5" #list>
-		
+
 		<div id="list-items" class="flex flex-col text-lg gap-1 p-5 w-full lg:w-2/4">
 			<div class="flex flex-row justify-between">
 				<span>Hipoteca máxima:</span>
 				<span>{{ results().capitalNeeded|currency:'EUR':'symbol':'1.2-2' }}</span>
 			</div>
-			
-	
+
+
 			<hr class="my-4 text-[#d1d5dc] border-1">
-	
-			
+
+
 		</div>
-		
+
 	</div> -->
 	<!-- End Results -->
 
@@ -429,7 +433,7 @@
 							{{ period.maxPayments|currency:'EUR':'symbol':'1.2-2'}}
 						</td>
 						<td class="px-3 md:px-6 py-4">
-							{{ period.tax|currency:'EUR':'symbol':'1.2-2'}} 
+							{{ period.tax|currency:'EUR':'symbol':'1.2-2'}}
 						</td>
 						<td class="px-3 md:px-6 py-4">
 							{{ period.payed|currency:'EUR':'symbol':'1.2-2'}}
