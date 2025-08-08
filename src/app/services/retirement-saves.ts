@@ -277,7 +277,7 @@ export class RetirementSaves {
     const contributionMonthlyBases: number[] = contributionBases.flatMap(monthlyBase => Array(12).fill(monthlyBase)) //Creates an array with all the monthlybases
     const lastMonths: number[] = contributionMonthlyBases.slice(-300);
     const sum: number = lastMonths.reduce((acc, val) => acc + val, 0);
-    return parseFloat((sum / 350).toFixed(2));
+    return parseFloat((sum / 300).toFixed(2));
   }
 
   /**
