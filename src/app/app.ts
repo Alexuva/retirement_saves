@@ -1,9 +1,9 @@
 import { afterNextRender, Component, computed, effect, ElementRef, inject, signal, Signal, viewChild, viewChildren, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { CurrencyPipe } from '@angular/common';
+import {CurrencyPipe} from '@angular/common';
 
 //Utils
-import { 
+import {
   decimalMaxValidation,
   decimalMinValidation,
   decimalsValidation,
@@ -13,7 +13,7 @@ import {
 
 import { RetirementSaves, RegimeType, RetirementData } from '@services/retirement-saves';
 
-//External libraries 
+//External libraries
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/animations/scale.css';
@@ -43,7 +43,7 @@ export class App {
   firstStep: Signal<ElementRef<HTMLElement>|undefined> = viewChild<ElementRef<HTMLElement>>('firstStep');
   secondStep: Signal<ElementRef<HTMLElement>|undefined> = viewChild<ElementRef<HTMLElement>>('secondStep');
   thirdStep: Signal<ElementRef<HTMLElement>|undefined> = viewChild<ElementRef<HTMLElement>>('thirdStep');
-  
+
   tooltips: Signal<readonly ElementRef<HTMLButtonElement>[]> = viewChildren<ElementRef<HTMLButtonElement>>('tooltip');
   resume: Signal<ElementRef<HTMLElement> | undefined> = viewChild<ElementRef<HTMLElement>>('resume');
   list: Signal<ElementRef<HTMLElement> | undefined> = viewChild<ElementRef<HTMLElement>>('list');
@@ -101,7 +101,7 @@ export class App {
   }
 
   verifyStep(step:number): boolean {
-    
+
     switch(step){
       case 1:
         const currentAge = this.retirementForm.get('currentAge');
@@ -109,10 +109,10 @@ export class App {
         const yearsContributing = this.retirementForm.get('yearsContributing');
         const annualSalaryIncrease = this.retirementForm.get('annualSalaryIncrease');
         const annualInflation = this.retirementForm.get('annualInflation');
-        
+
       return !!(currentAge?.valid && yearlyIncome?.valid && yearsContributing?.valid && annualSalaryIncrease?.valid && annualInflation?.valid);
-      
-      case 2: 
+
+      case 2:
         const retirementAge = this.retirementForm.get('retirementAge');
         const retirementMonthlyObjective = this.retirementForm.get('retirementMonthlyObjective');
 
@@ -138,12 +138,12 @@ export class App {
     return (group: AbstractControl): ValidationErrors | null => {
       const monthlyPay = group.get(monthly);
       const annualPay = group.get(annual);
-  
+
       if(monthlyPay !== null && annualPay !== null && monthlyPay.value !== null && annualPay.value !== null){
         const monthlyAnnualPay = parseFloat((annualPay.value / 12).toFixed(2));
         if(monthlyPay.value < monthlyAnnualPay) return { retirementMonthlyIsGreater: { min: monthlyAnnualPay, actual: monthlyPay, total: annualPay.value } }
       }
-  
+
       return null
     }
   }
@@ -151,9 +151,9 @@ export class App {
   createTooltips(tooltips: readonly ElementRef<HTMLButtonElement>[]):void{
     tooltips.forEach((tooltip) =>{
       const type = tooltip.nativeElement.getAttribute('data-tooltip-type');
-      
-      switch(type){          
-        
+
+      switch(type){
+
         case 'yearlyIncome':
           tippy(tooltip.nativeElement, {
             content: 'Indica tu salario bruto anual o el rendimiento neto de tu actividad económica si eres autónomo.',
@@ -221,7 +221,7 @@ export class App {
 
     })
   }
-  
+
   showTable( show:boolean ):void {
     const table = this.table();
     if(table){
@@ -233,11 +233,11 @@ export class App {
         this.isShowTable.set(false);
         table.nativeElement.classList.add('hidden');
       }
-    } 
+    }
   }
 
   onSubmit():void {
-    if(this.retirementForm.invalid){ 
+    if(this.retirementForm.invalid){
       this.retirementForm.markAllAsTouched();
       return;
     }
@@ -251,11 +251,11 @@ export class App {
   }
 
   isValidField( fieldName: string ): boolean | null {
-    
+
     if (fieldName === 'retirementMonthlyObjective'){
       const formErrors = this.retirementForm.errors;
       const field = this.retirementForm.get('retirementMonthlyObjective')
-    
+
       if(formErrors && formErrors['retirementMonthlyIsGreater'] && field && field.touched) {
         return true;
       }
@@ -265,7 +265,7 @@ export class App {
   }
 
   getFieldError( fieldName:string ): string | null{
-    
+
     if(!this.retirementForm.controls[fieldName]) return null; //If there is no field with that name
 
     const errors = this.retirementForm.controls[fieldName].errors ?? {};
@@ -275,7 +275,7 @@ export class App {
       switch(key){
         case 'required':
           return 'Este campo es requerido';
-        
+
         case 'min':
           if(['currentAge', 'retirementAge'].includes(fieldName)){
             return `El mínimo son ${errors['min'].min} años`;
@@ -287,26 +287,26 @@ export class App {
             return `El máximo son ${errors['max'].max} años`;
           }
           return `El máximo es ${this.currencyPipe.transform(errors['max'].max, 'EUR', 'symbol', '1.2-2')}`;
-        
+
         case 'decimal':
         case 'decimals':
         case 'integer':
           return `Introduce un número válido`;
-        
+
         case 'percentage':
           return `Introduce un porcentage entre 0,01% y 100%`
 
-        default: 
+        default:
           return null;
-        
+
       }
 
     }
 
     const groupErrors = this.retirementForm.errors ?? {};
-    
+
     for(const key in groupErrors){
-      
+
       switch(key){
 
         case 'retirementMonthlyIsGreater':
@@ -318,13 +318,13 @@ export class App {
       }
 
     }
-    
+
     return null;
   }
 
   normalizeValues( form:FormGroup ): RetirementData{
 
-    let values: { [key:string]: string|number } = {...form.value};    
+    let values: { [key:string]: string|number } = {...form.value};
 
     for(const control in values){
 
@@ -365,12 +365,12 @@ export class App {
           }else{
             values[control] = 2.5;
           }
-          
+
         break;
       }
 
     }
-    
+
     return values as RetirementData;
   }
 
@@ -379,7 +379,7 @@ export class App {
     if(typeof value !== 'string'){
       return value;
     }
-  
+
     if(isDecimal){
       const numeric_value = value.replaceAll(',','.');
       return parseFloat(numeric_value)
@@ -390,29 +390,29 @@ export class App {
 
   async generatePdf() {
     this.isGeneratingPdf.set(true);
-  
+
     const viewResume = this.resume();
     if (!viewResume) return;
-  
+
     const viewList = this.list();
     if (!viewList) return;
-  
+
     const viewTable = this.table();
     if (!viewTable) return;
-  
+
     const resumeToPrint = viewResume.nativeElement.cloneNode(true) as HTMLElement;
     const button = resumeToPrint.querySelector('#downloadPdf') as HTMLElement;
     if (button) button.classList.add('hidden');
-  
+
     const listToPrint = viewList.nativeElement.cloneNode(true) as HTMLElement;
     const text = listToPrint.querySelector('#loam-text');
     const listItems = listToPrint.querySelector('#list-items');
     if (listItems) listItems.classList.remove('lg:w-2/4', 'xl:w-2/3');
     if (text) text.remove();
-  
+
     const tableToPrint = viewTable.nativeElement.cloneNode(true) as HTMLElement;
     tableToPrint.classList.remove('hidden');
-  
+
     const printHtml = `
       <div style="width:794px;max-width:100%;">
         ${resumeToPrint.outerHTML}
@@ -420,7 +420,7 @@ export class App {
         ${tableToPrint.outerHTML}
       </div>
     `;
-  
+
     const globalStylesView = document.querySelector('#affordable-styles');
     let globalTailwindStyles = '';
     if (globalStylesView && globalStylesView.tagName === 'LINK') {
@@ -429,7 +429,7 @@ export class App {
         globalTailwindStyles = `<link rel="stylesheet" href="${link.href}">`;
       }
     }
-    
+
     if (!globalTailwindStyles) {
       const headLinks = Array.from(document.head.querySelectorAll('link[rel="stylesheet"]'));
       const headStyles = Array.from(document.head.querySelectorAll('style'));
@@ -441,15 +441,15 @@ export class App {
           .map(style => `<style>${(style as HTMLStyleElement).innerHTML}</style>`)
           .join('\n');
     }
-  
-    
+
+
     const printWindow = window.open('', '_blank', 'width=1,height=1,top=10000,left=10000');
     if (!printWindow) {
       this.isGeneratingPdf.set(false);
       console.error("No se pudo abrir la ventana para imprimir.");
       return;
     }
-  
+
     printWindow.document.write(`
       <html>
         <head>
@@ -477,10 +477,10 @@ export class App {
         </body>
       </html>
     `);
-  
+
     printWindow.document.close();
-  
-    
+
+
     setTimeout(() => {
       this.isGeneratingPdf.set(false);
     }, 5000);

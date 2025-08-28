@@ -321,18 +321,18 @@
 					<p>
 						Si te jubilas a los <b>{{ result.data.retirementAge }} años</b>,
 						tu pensión de la Seguridad Social será de <b>{{result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}} al mes @if(result.data.annualInflation > 0){(ajustado a inflación)}</b>
-						y necesitarás <b>{{result.data.retirementMonthlyObjective - result.monthlyRetirement|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación). }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}}. }</b>
+						y necesitarás <b>{{result.savesNeeded / 12|currency:'EUR':'symbol':'1.2-2'}}</b> al mes para alcanzar tu objetivo de <b>@if(result.data.annualInflation > 0){ {{result.objectiveInflation|currency:'EUR':'symbol':'1.2-2'}} (ajustado a inflación). }@else{ {{result.data.retirementMonthlyObjective|currency:'EUR':'symbol':'1.2-2'}}. }</b>
 					</p>
 					<p>
 						Esto se traduce en que necesitas ahorrar <b>{{result.capitalNeeded|currency:'EUR':'symbol':'1.2-2'}} en total.</b>
             @if(result.compoundCalculatorToReachGoal > 0){
-              Para conseguirlo necesitas ahorrar <b>{{result.compoundCalculatorToReachGoal|currency:'EUR':'symbol':'1.2-2'}} al mes.</b>
+              Para conseguirlo necesitas ahorrar <b>{{result.compoundCalculatorToReachGoal|currency:'EUR':'symbol':'1.2-2'}} al mes en total.</b>
             }
             @if(result.data.currentSavesMonthly > 0){
               @if(result.percentageCovered >= 100){
-							  . Ahora mismo estás ahorrando un extra de <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> respecto a lo que necesitas.
+							  Con tu plan actual, podrías reducir tu ahorro en <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> y aún así alcanzar tu objetivo.
 						  }@else {
-							  , lo que supone <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> más de lo que ahorras actualmente.
+							  Esto supone <b>{{abs(result.neededNewMonthlySaves)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> más de lo que ahorras actualmente.
 						  }
             }
 					</p>
@@ -348,7 +348,7 @@
 					</p>
           @if(result.data.currentSavesMonthly > 0){
             <p>
-						  Ahora mismo estás ahorrando un extra de <b>{{abs(result.data.currentSavesMonthly)|currency:'EUR':'symbol':'1.2-2'}} al mes</b> respecto a lo que necesitas.
+						  Como no necesitas ahorrar para este objetivo, tus <b>{{result.data.currentSavesMonthly|currency:'EUR':'symbol':'1.2-2'}} al mes</b> son un extra que te dará mayor seguridad financiera.
 					  </p>
           }
 					<p>

@@ -53,7 +53,7 @@ export class RetirementSaves {
     const percentage = this.retirementPercentage(data.retirementAge, data.yearsContributing, data.currentAge);
     //6. Calculate the monthly payment
     const monthlyRetirement = this.monthlyRetirementPayment(data.retirementAge, percentage, regulatoryBase, data.currentAge, data.yearsContributing, data.annualInflation);
-    const monthlyRetirementInflation = data.annualInflation > 0 ? this.calculateInflation(monthlyRetirement, (data.retirementAge - data.currentAge), data.annualInflation) : monthlyRetirement;
+    const monthlyRetirementInflation = monthlyRetirement;
     const objectiveInflation = data.annualInflation > 0 ? this.calculateInflation(data.retirementMonthlyObjective, (data.retirementAge - data.currentAge), data.annualInflation) : data.retirementMonthlyObjective;
     //7. Calculates if the person needs to have saves to get to the objective
     const isSavesNeeded = this.isSavesNeeded(monthlyRetirement, data.retirementMonthlyObjective, data.annualInflation, data.currentAge, data.retirementAge);
@@ -446,10 +446,25 @@ export class RetirementSaves {
     const interest = currentReturn / 100
     const inflation = annualInflation / 100;
     const months = (retirementAge - currentAge) * 12;
+
+    if (currentReturn === 0) {
+      const futureValueSavings = currentSaves;
+      const futureValueContributions = currentSavesMonthly * months;
+      const total = parseFloat((futureValueSavings + futureValueContributions).toFixed(2));
+      return total;
+    }
+
     const monthlyAdjustedReturn = (((1 + interest) / (1 + inflation)) - 1) / 12;
 
-    const futureValueSavings = monthlyAdjustedReturn === 0 ? currentSaves : currentSaves * Math.pow(1 + monthlyAdjustedReturn, months);
-    const futureValueContributions = monthlyAdjustedReturn === 0 ? currentSavesMonthly * months : currentSavesMonthly * ((Math.pow(1 + monthlyAdjustedReturn, months) - 1) / monthlyAdjustedReturn);
+    if (Math.abs(monthlyAdjustedReturn) < 0.0001) {
+      const futureValueSavings = currentSaves;
+      const futureValueContributions = currentSavesMonthly * months;
+      const total = parseFloat((futureValueSavings + futureValueContributions).toFixed(2));
+      return total;
+    }
+
+    const futureValueSavings = currentSaves * Math.pow(1 + monthlyAdjustedReturn, months);
+    const futureValueContributions = currentSavesMonthly * ((Math.pow(1 + monthlyAdjustedReturn, months) - 1) / monthlyAdjustedReturn);
     const total = parseFloat((futureValueSavings + futureValueContributions).toFixed(2));
 
     return total;
@@ -472,8 +487,46 @@ export class RetirementSaves {
     const inflation = annualInflation / 100;
     const months = (retirementAge - currentAge) * 12;
 
+    if (currentReturn === 0) {
+      const futureValueSavings = currentSaves;
+      const futureValueContributions = currentMonthlyContribution * months;
+      const projectedTotal = futureValueSavings + futureValueContributions;
+      
+      if (projectedTotal >= targetSavings) {
+        const remainingNeededFromContributions = targetSavings - currentSaves;
+        if (remainingNeededFromContributions <= 0) return 0;
+        const minimumMonthlyContribution = remainingNeededFromContributions / months;
+        return parseFloat(minimumMonthlyContribution.toFixed(2));
+      }
+      
+      const remainingNeeded = targetSavings - projectedTotal;
+      const additionalMonthlyContribution = remainingNeeded / months;
+      const totalMonthlyContribution = currentMonthlyContribution + additionalMonthlyContribution;
+      
+      return parseFloat(totalMonthlyContribution.toFixed(2));
+    }
+
     //Return adjusted by inflation
     const monthlyAdjustedReturn = (((1 + interest) / (1 + inflation)) - 1) / 12;
+
+    if (Math.abs(monthlyAdjustedReturn) < 0.0001) {
+      const futureValueSavings = currentSaves;
+      const futureValueContributions = currentMonthlyContribution * months;
+      const projectedTotal = futureValueSavings + futureValueContributions;
+      
+      if (projectedTotal >= targetSavings) {
+        const remainingNeededFromContributions = targetSavings - currentSaves;
+        if (remainingNeededFromContributions <= 0) return 0;
+        const minimumMonthlyContribution = remainingNeededFromContributions / months;
+        return parseFloat(minimumMonthlyContribution.toFixed(2));
+      }
+      
+      const remainingNeeded = targetSavings - projectedTotal;
+      const additionalMonthlyContribution = remainingNeeded / months;
+      const totalMonthlyContribution = currentMonthlyContribution + additionalMonthlyContribution;
+      
+      return parseFloat(totalMonthlyContribution.toFixed(2));
+    }
 
     //Future value actual savings
     const futureValueSavings = currentSaves * Math.pow(1 + monthlyAdjustedReturn, months);
@@ -484,14 +537,24 @@ export class RetirementSaves {
     //Total projected
     const projectedTotal = futureValueSavings + futureValueContributions;
 
-    if (projectedTotal >= targetSavings) return 0;
+    if (projectedTotal >= targetSavings) {
+      // Calculate minimum monthly contribution needed
+      const futureValueSavingsOnly = currentSaves * Math.pow(1 + monthlyAdjustedReturn, months);
+      if (futureValueSavingsOnly >= targetSavings) return 0;
+      
+      const remainingNeededFromContributions = targetSavings - futureValueSavingsOnly;
+      const minimumMonthlyContribution = remainingNeededFromContributions * monthlyAdjustedReturn / (Math.pow(1 + monthlyAdjustedReturn, months) - 1);
+      
+      return parseFloat(minimumMonthlyContribution.toFixed(2));
+    }
 
     //What needs to save additional
     const remainingNeeded = targetSavings - projectedTotal;
 
     const additionalMonthlyContribution = remainingNeeded * monthlyAdjustedReturn / (Math.pow(1 + monthlyAdjustedReturn, months) - 1);
+    const totalMonthlyContribution = currentMonthlyContribution + additionalMonthlyContribution;
 
-    return parseFloat(additionalMonthlyContribution.toFixed(2));
+    return parseFloat(totalMonthlyContribution.toFixed(2));
 
   }
 
